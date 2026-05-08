@@ -31,7 +31,7 @@ curl --insecure --request $operation \
 {
   "account": {
     "role": {
-      "id": 3
+      "id": 2
     },
     "currency": "DKK",
     "name": "Test Tenant",
