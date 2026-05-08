@@ -46,7 +46,9 @@ curl --insecure --request $operation \
       "datacenter": "DCName",
       "storageType": "thin",
       "certificateProvider": "internal",
-      "cluster": "all"
+      "cluster": "all",
+      "username": "jsmith",
+      "password": "Passw0rd!"
     },
     "agentMode": "cloudInit",
     "visibility": "public",
