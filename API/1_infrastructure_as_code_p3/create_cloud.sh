@@ -16,7 +16,7 @@ fi
 
 operation="POST"
 protocol="https://"
-endpoint="/api/accounts"
+endpoint="/api/zones"
 args=""
 
 # Print out what we are doing
