@@ -37,7 +37,7 @@ curl --insecure --request $operation \
 {
   "instance": {
     "plan": {
-      "id": ${PLAN_ID} 
+      "idee": ${PLAN_ID} 
     }
   },
   "deleteOriginalVolumes": false
