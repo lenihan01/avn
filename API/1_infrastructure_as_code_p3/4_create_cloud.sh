@@ -1,4 +1,4 @@
-# (C) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2025-2026 Hewlett Packard Enterprise Development LP
 #!/bin/bash
 
 set +eux
@@ -27,28 +27,28 @@ curl --insecure --request $operation \
   --header "accept: application/json" \
   --header "content-type: application/json" \
   --header "authorization: Bearer ${TOKEN}" \
-  -d ' 
+  -d '
 {
   "zone": {
     "zoneType": {
-      "id": 3
+      "id": 2
     },
     "config": {
       "useHostCredentials": "on",
       "ebsEncryption": "on",
       "rpcMode": "guestexec",
-      "applianceUrl": "https://vsphere.hpelabs.local",
+      "applianceUrl": "",
       "datacenterName": "DCName",
       "inventoryLevel": "full",
       "consoleKeymap": "UK",
-      "apiUrl": "https://vcenter.morpheus.local/sdk",
-      "apiVersion": "7.0",
+      "apiUrl": "https://vcenter9.cs8.local",
+      "apiVersion": "7.0+",
       "datacenter": "DCName",
       "storageType": "thin",
       "certificateProvider": "internal",
       "cluster": "all",
-      "username": "jsmith",
-      "password": "Passw0rd!"
+      "username": "administrator@vsphere.local",
+      "password": "Password!234"
     },
     "agentMode": "cloudInit",
     "visibility": "public",
@@ -56,11 +56,11 @@ curl --insecure --request $operation \
     "autoRecoverPowerState": false,
     "scalePriority": 1,
     "securityMode": "off",
-    "name": "My Cloud",
+    "name": "Aeven vSphere Cloud",
     "groupId": 3,
-    "description": "My Cloud",
+    "description": "Aeven vSphere Cloud",
     "code": "mycloud",
-    "location": "ALF",
+    "location": "AMV",
     "accountId": 1,
     "defaultDatastoreSyncActive": true,
     "defaultNetworkSyncActive": true,
@@ -71,3 +71,4 @@ curl --insecure --request $operation \
   }
 }
 '
+
