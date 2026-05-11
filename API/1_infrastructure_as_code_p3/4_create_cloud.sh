@@ -32,7 +32,6 @@ curl --insecure --request $operation \
   "zone": {
     "zoneType": {
       "id": 2,
-      "guidanceMode": "off", 
     },
     "config": {
       "useHostCredentials": "on",
@@ -44,6 +43,7 @@ curl --insecure --request $operation \
       "consoleKeymap": "UK",
       "apiUrl": "https://vcenter9.cs8.local",
       "apiVersion": "7.0",
+      "guidanceMode": "off",
       "datacenter": "DC9",
       "storageType": "thin",
       "certificateProvider": "internal",
