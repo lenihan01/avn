@@ -1,4 +1,4 @@
-# (C) Copyright 2025 Hewlett Packard Enterprise Development LP
+# (C) Copyright 2025-2026 Hewlett Packard Enterprise Development LP
 #!/bin/bash
 
 set +eux
@@ -34,13 +34,13 @@ curl --insecure --request $operation \
       "id": 1
     },
     "instanceType": {
-      "code": "hpe-baremetal-plugin.provision"
+      "code": "ubuntu"
     },
     "layout": {
-      "id": 277 
+      "id": 212
     },
     "plan": {
-      "id": 244 
+      "id": 30
     },
     "name": "jlanurag2",
     "hostName": "jlanurag2"
@@ -49,14 +49,15 @@ curl --insecure --request $operation \
   "layoutSize": 1,
   "config": {
     "createUser": true,
-    "imageId": 189,
+    "resourcePoolId": "pool-53",
     "noAgent": false
   },
-  "zoneId": 1,
+  "zoneId": 7,
   "volumes": [
     {
       "id": -1,
       "rootVolume": true,
+      "datastoreId": "62",
       "name": "root",
       "size": 20
     }
@@ -64,35 +65,13 @@ curl --insecure --request $operation \
   "networkInterfaces": [
     {
       "network": {
-        "id": "network-4",
+        "id": 48,
         "pool": {
-          "id":1 
+          "id":1
         }
       },
       "ipMode": "",
       "networkInterfaceTypeId": 18,
-      "networkInterfaces": [
-        {
-          "network": {
-            "id": "network-4",
-            "pool": {
-              "id": 1 
-            }
-          },
-          "ipMode": "",
-          "networkInterfaceTypeId": 19
-        }
-      ]
-    },
-    {
-      "network": {
-        "id": "network-4",
-        "pool": {
-          "id": 1 
-        }
-      },
-      "ipMode": "",
-      "networkInterfaceTypeId": 18 
     }
   ]
 }
