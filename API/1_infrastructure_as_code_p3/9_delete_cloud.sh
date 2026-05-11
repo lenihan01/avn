@@ -20,7 +20,7 @@ fi
 operation="DELETE"
 protocol="https://"
 endpoint="/api/zones/${ID}"
-args="?preserveVolumes=off&keepBackups=off&releaseFloatingIps=on&releaseEIPs=on&force=off"
+args="?preserveVolumes=off&keepBackups=off&releaseFloatingIps=on&releaseEIPs=on&force=true"
 
 # Print out what we are doing
 echo "${operation} ${protocol}${URL}${endpoint}${args}"
