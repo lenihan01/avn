@@ -34,8 +34,8 @@ curl --insecure --request $operation \
       "id": 2
     },
     "currency": "DKK",
-    "name": "Test Tenant",
-    "description": "Test Tenant",
+    "name": "Aeven Test Tenant",
+    "description": "Aeven Test Tenant",
     "subdomain": "tt"
   }
 }
