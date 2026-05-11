@@ -31,7 +31,8 @@ curl --insecure --request $operation \
 {
   "zone": {
     "zoneType": {
-      "id": 2
+      "id": 2,
+      "guidanceMode": "off", 
     },
     "config": {
       "useHostCredentials": "on",
@@ -42,11 +43,12 @@ curl --insecure --request $operation \
       "inventoryLevel": "full",
       "consoleKeymap": "UK",
       "apiUrl": "https://vcenter9.cs8.local",
-      "apiVersion": "7.0+",
-      "datacenter": "DCName",
+      "apiVersion": "7.0",
+      "datacenter": "DC9",
       "storageType": "thin",
       "certificateProvider": "internal",
-      "cluster": "all",
+      "cluster": "CL9",
+      "resourcePoolId": "",
       "username": "administrator@vsphere.local",
       "password": "Password!234"
     },
