@@ -19,7 +19,7 @@ fi
 operation="GET"
 protocol="https://"
 endpoint="/api/provision-types"
-args="?max=10000&offset=0&sort=name&direction=asc"
+args="?max=10000&offset=0&sort=name&direction=asc&name=VMware"
 
 # Print out what we are doing
 echo "${operation} ${protocol}${URL}${endpoint}${args}"
