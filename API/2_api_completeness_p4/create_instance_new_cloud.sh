@@ -66,10 +66,9 @@ curl --insecure --request $operation \
     {
       "network": {
         "id": 111
-        }
-      },
-      "ipMode": "",
-      "networkInterfaceTypeId": "10",
+      }
+    "ipMode": "",
+    "networkInterfaceTypeId": "10",
     }
   ]
 }
