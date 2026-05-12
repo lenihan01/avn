@@ -33,13 +33,13 @@ curl --insecure --request $operation \
   --header "accept: application/json" \
   --header "content-type: application/json" \
   --header "authorization: Bearer ${TOKEN}" \
-  --data " 
+  --data ' 
 {
-  \"instance\": {
-    \"plan\": {
-      \"id\": \"${PLAN_ID}\" 
+  "instance": {
+    "plan": {
+      "id": ${PLAN_ID}
     }
   },
-  \"deleteOriginalVolumes\": false
+  "deleteOriginalVolumes": false
 }
-"
+'
