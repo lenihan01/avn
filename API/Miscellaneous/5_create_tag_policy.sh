@@ -41,7 +41,7 @@ curl --insecure --request $operation \
     },
     "name": "HCTA Sample Tag Policy",
     "description": "HCTA Sample Tag Policy",
-    "enabled": "on",
+    "enabled": "off",
     },
     "accounts": null
   }
