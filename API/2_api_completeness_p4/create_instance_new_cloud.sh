@@ -65,7 +65,10 @@ curl --insecure --request $operation \
   "networkInterfaces": [
     {
       "network": {
-        "id": "network-74" 
+        "id": 111,
+        "pool": {
+          "id":1
+        } 
       },
       "ipMode": "",
       "networkInterfaceTypeId": 10
