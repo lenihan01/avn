@@ -8,7 +8,7 @@ verbose="1"
 operation="POST"
 protocol="https://"
 endpoint="/oauth/token"
-args="?client_id=morph-api&grant_type=password&scope=write"
+args="?client_id=morph-automation&grant_type=password&scope=write"
 
 . ../lib/functions.sh
 
