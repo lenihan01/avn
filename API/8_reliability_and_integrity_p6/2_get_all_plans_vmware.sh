@@ -19,7 +19,7 @@ fi
 operation="GET"
 protocol="https://"
 endpoint="/api/service-plans"
-args="?max=10000&offset=0&sort=name&direction=asc&includeZones=false&provisionTypeID=22"
+args="?max=10000&offset=0&sort=name&direction=asc&includeZones=false&provisionTypeId=22"
 
 # Print out what we are doing
 echo "${operation} ${protocol}${URL}${endpoint}${args}"
