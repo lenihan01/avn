@@ -71,7 +71,7 @@ curl --insecure --request $operation \
         }
       },
       "ipMode": "",
-      "networkInterfaceTypeId": "",
+      "networkInterfaceTypeId": "10",
     }
   ]
 }
