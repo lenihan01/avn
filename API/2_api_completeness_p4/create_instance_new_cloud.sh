@@ -65,9 +65,7 @@ curl --insecure --request $operation \
   "networkInterfaces": [
     {
       "network": {
-        "id": 111,
-        "pool": {
-          "id":
+        "id": 111
         }
       },
       "ipMode": "",
