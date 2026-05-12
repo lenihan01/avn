@@ -12,8 +12,8 @@ if [[ -z "${URL}" ]]; then
 elif [[ -z "${TOKEN}" ]]; then
   echo "TOKEN env var not set!"
   exit 1
-elif [[ -z "${ID}" ]]; then
-  echo "ID env var not set!"
+elif [[ -z "${INSTANCE_ID}" ]]; then
+  echo "INSTANCE_ID env var not set!"
   exit 1
 elif [[ -z "${PLAN_ID}" ]]; then
   echo "PLAN_ID env var not set!"
@@ -22,7 +22,7 @@ fi
 
 operation="PUT"
 protocol="https://"
-endpoint="/api/instances/${ID}/resize"
+endpoint="/api/instances/${INSTANCE_ID}/resize"
 args=""
 
 # Print out what we are doing
