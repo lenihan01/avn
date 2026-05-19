@@ -19,7 +19,7 @@ fi
 operation="GET"
 protocol="https://"
 endpoint="/api/instances"
-args="?max=1000&offset=0&showDeleted=false&details=false&tags.name=UI"
+args="?max=1000&offset=0&showDeleted=false&details=false&tags.UI=1"
 
 # Print out what we are doing
 echo "${operation} ${protocol}${URL}${endpoint}${args}"
