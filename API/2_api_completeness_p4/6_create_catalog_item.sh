@@ -34,19 +34,15 @@ curl --insecure --request $operation \
     "enabled": true,
     "featured": false,
     "allowQuantity": false,
-    "config": {
-      "config": {
-        "createUser": true
-      }
+    "workflow": {
+      "id": 27
     },
     "formType": "optionTypes",
-    "name": "my_api_catalog_item",
-    "code": "my_code",
-    "category": "my_category",
-    "description": "My Catelog Item",
-    "labels": [],
-    "type": "instance",
-    "layoutCode": "Ubuntu-20"
+    "description": "aeven",
+    "type": "workflow",
+    "context": "instance",
+    "name": "aeven-catalog-item"
   }
 }
+
 '
