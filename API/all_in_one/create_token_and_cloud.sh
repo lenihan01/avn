@@ -69,7 +69,7 @@ curl --insecure --request $operation \
       "cluster": "CL9",
       "resourcePoolId": "",
       "username": "administrator@vsphere.local",
-      "password": "Password!234"
+      "password": "<redacted>"
     },
     "agentMode": "cloudInit",
     "visibility": "public",
