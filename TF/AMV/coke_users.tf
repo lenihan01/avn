@@ -36,11 +36,3 @@ resource "hpe_morpheus_user" "coke2" {
   windows_password_wo         = "Windows123!"
   windows_password_wo_version = 1
 }
-
-resource "hpe_morpheus_user_group" "example" {
-  name         = "tftest"
-  description  = "terraform"
-  sudo_access  = true
-  server_group = "test"
-  user_ids     = [hpe_morpheus_user.coke1.id, hpe_morpheus_user.coke2.id]
-}
