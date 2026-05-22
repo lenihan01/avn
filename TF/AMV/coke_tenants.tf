@@ -1,5 +1,4 @@
 resource "hpe_morpheus_tenant" "coke-master-tenant" {
-  count           = 0
   name            = "Coke"
   description     = "Coke Master Tenant"
   enabled         = true
