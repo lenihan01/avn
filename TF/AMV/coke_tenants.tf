@@ -9,16 +9,3 @@ resource "hpe_morpheus_tenant" "coke-master-tenant" {
   account_name    = "tenant 12345"
   customer_number = "12345"
 }
-
-
-
-data "hpe_morpheus_role" "coke_master" {
-#  name = "Tenant Admin"
-  id   = 2
-}
-
-data "hpe_morpheus_role" "coke_user" {
-#  name = "User_Role"
-  id   = 85 
-}
-

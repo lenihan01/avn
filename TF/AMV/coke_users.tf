@@ -4,7 +4,7 @@ resource "hpe_morpheus_user" "coke1" {
   email                       = "coke1@testacc.com"
   password_wo                 = "Secret123!"
   password_wo_version         = 1
-  role_ids                    = []
+  role_ids                    = [data.hpe_morpheus_role.coke_user.id]
   first_name                  = "Coke"
   last_name                   = "User1"
   linux_username              = "linuser"
@@ -24,7 +24,7 @@ resource "hpe_morpheus_user" "coke2" {
   email                       = "coke2@testacc.com"
   password_wo                 = "Secret123!"
   password_wo_version         = 1
-  role_ids                    = []
+  role_ids                    = [data.hpe_morpheus_role.coke_user.id]
   first_name                  = "Coke"
   last_name                   = "User2"
   linux_username              = "linuser"
