@@ -13,5 +13,6 @@ provider "hpe" {
     username = "username"
     password = "password"
     url      = "https://emorph.can.cs8.local"
+    insecure = true
   }
 }

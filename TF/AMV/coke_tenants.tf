@@ -11,6 +11,8 @@ resource "hpe_morpheus_tenant" "coke-master-tenant" {
 }
 
 
+
 data "hpe_morpheus_role" "coke_master" {
-  name = "Tenant Admin"
+#  name = "Tenant Admin"
+  id   = 2
 }
