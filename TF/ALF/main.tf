@@ -10,9 +10,9 @@ terraform {
 provider "hpe" {
   # Configuration options
   morpheus {
-    username = "username"
-    password = "password"
-    url      = "https://emorph.can.cs8.local"
+    username = "john.lenihan@hpe.com"
+    password = "<redacted>"
+    url      = "https://360ubuntu1.hpelabs.local"
     insecure = true
   }
 }
