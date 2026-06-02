@@ -4,6 +4,5 @@ data "hpe_morpheus_role" "coke_master" {
 }
 
 data "hpe_morpheus_role" "coke_user" {
-  name = "User_Role"
-#  id   = 85
+  name = "User Admin"
 }
