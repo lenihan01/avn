@@ -1,4 +1,4 @@
-coke-master-tenantterraform {
+terraform {
   required_providers {
     hpe = {
       source  = "HPE/hpe"
@@ -9,6 +9,7 @@ coke-master-tenantterraform {
 
 # Master Tenant
 provider "hpe" {
+  alias = "master-tenant"
   # Configuration options
   morpheus {
     username = var.master_tenant_username 
@@ -27,5 +28,6 @@ provider "hpe" {
     password = var.coke_admin_password
     url      = var.master_tenant_url
     insecure = true
+    tenant_subdomain = "coke"
   }
 }
