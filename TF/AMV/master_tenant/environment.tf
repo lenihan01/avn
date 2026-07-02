@@ -1,6 +1,6 @@
 variable "master_tenant_username" {
   type        = string
-  description "Master Tenant username"
+  description = "Master Tenant username"
 }
 
 variable "master_tenant_password" {
