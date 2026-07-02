@@ -24,14 +24,25 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
 
   keyboard_layout = "us"
 
-  config_vmware = {
-    api_url                       = "https://vcenter9.cs8.local"
-    api_version                   = "7.0"
+#  config_vmware = {
+#    api_url                       = "https://vcenter9.cs8.local"
+#    api_version                   = "7.0"
+#    datacenter                    = "DC9"
+#    cluster                       = "CL9"
+#    username                      = "administrator@vsphere.local"
+#    password                      = "<redacted>"
+#    certificate_provider          = "internal"
+#    enable_network_type_selection = false
+#  }
+
+  config = {
+    apiUrl                       = "https://vcenter9.cs8.local"
+    apiVersion                   = "7.0"
     datacenter                    = "DC9"
     cluster                       = "CL9"
     username                      = "administrator@vsphere.local"
     password                      = "<redacted>"
-    certificate_provider          = "internal"
-    enable_network_type_selection = false
+    certificateProvider          = "internal"
+#    enable_network_type_selection = false
   }
 }
