@@ -41,7 +41,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
     datacenter                    = "DC9"
     cluster                       = "CL9"
     username                      = "administrator@vsphere.local"
-    password                      = "<redacted>"
+    password                      = var.coke_cloud_password 
     certificateProvider          = "internal"
 #    enable_network_type_selection = false
   }

@@ -8,7 +8,7 @@ data "hpe_morpheus_role" "coke_user" {
 #  id   = 85
 }
 
-data @hpe_morpheus_role" "coke_admin" {
+data "hpe_morpheus_role" "coke_admin" {
   name = "Admin_Role_All_Tenants"
   # id = 65
 }
