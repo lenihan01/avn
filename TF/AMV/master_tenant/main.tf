@@ -9,7 +9,6 @@ terraform {
 
 # Master Tenant
 provider "hpe" {
-  alias = "master-tenant"
   # Configuration options
   morpheus {
     username = var.master_tenant_username 
