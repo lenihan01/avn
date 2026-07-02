@@ -1,4 +1,4 @@
-terraform {
+coke-master-tenantterraform {
   required_providers {
     hpe = {
       source  = "HPE/hpe"
