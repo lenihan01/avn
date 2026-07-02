@@ -15,6 +15,7 @@ resource "hpe_morpheus_user" "coke_admin" {
   windows_username            = "coke_admin"
   windows_password_wo         = var.coke_admin_password 
   windows_password_wo_version = 1
+  provider                    = hpe.master-tenant
 }
 
 resource "hpe_morpheus_user" "coke" {
@@ -35,4 +36,5 @@ resource "hpe_morpheus_user" "coke" {
   windows_username            = "coke${count.index}"
   windows_password_wo         = var.coke_password 
   windows_password_wo_version = 1
+  provider                    = hpe.master-tenant
 }

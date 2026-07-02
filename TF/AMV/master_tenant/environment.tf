@@ -15,6 +15,11 @@ variable "master_tenant_url" {
  
 # Per-tenant variables
 
+variable "coke_admin_username" {
+  type        = string
+  description = "Coke Admin Username"
+}
+
 variable "coke_admin_password" {
   type        = string
   description = "Coke Admin Password"

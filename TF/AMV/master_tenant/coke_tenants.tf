@@ -8,4 +8,5 @@ resource "hpe_morpheus_tenant" "coke-master-tenant" {
   account_number  = "12345"
   account_name    = "tenant 12345"
   customer_number = "12345"
+  provider        = hpe.master-tenant
 }

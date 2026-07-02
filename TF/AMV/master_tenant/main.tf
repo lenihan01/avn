@@ -9,26 +9,24 @@ terraform {
 
 # Master Tenant
 provider "hpe" {
+  alias = "master-tenant"
   # Configuration options
   morpheus {
     username = var.master_tenant_username 
     password = var.master_tenant_password 
     url      = var.master_tenant_url 
     insecure = true
-
-    alias = 'master'
   }
 }
 
 # Coke Master Tenant
 provider "hpe" {
+  alias = "coke-master-tenant"
   # Configuration options
   morpheus {
-    username = var.master_tenant_username
-    password = var.master_tenant_password
+    username = var.coke_admin_username
+    password = var.coke_admin_password
     url      = var.master_tenant_url
     insecure = true
-
-    alias = 'coke_master'
   }
 }
