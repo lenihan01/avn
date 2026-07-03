@@ -13,7 +13,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
   visibility       = "private"
 
   agent_install_mode       = "ssh"
-  appliance_url            = "https://emorph.can.cs8.local"
+  appliance_url            = "https://10.0.17.149"
   auto_recover_power_state = true
   import_existing_vms      = "off"
 
