@@ -4,6 +4,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
   tenant_id = hpe_morpheus_tenant.coke-master-tenant.id 
   group_id  = 1
 
+  provider  = hpe.master-tenant
   code             = "cokevmwarecloud1"
   external_id      = "cokevmwarecloud1"
   labels           = ["aLabel1", "aLabel2"]
@@ -35,6 +36,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
 #    enable_network_type_selection = false
 #  }
 
+  cloud_type_code = "vmware"
   config = {
     apiUrl                       = "https://vcenter9.cs8.local"
     apiVersion                   = "7.0"
