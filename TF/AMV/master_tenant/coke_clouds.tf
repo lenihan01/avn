@@ -1,5 +1,4 @@
 resource "hpe_morpheus_cloud" "coke_vmware_1" {
-  count     = 0
   name      = "Coke VMWare Cloud 1"
   tenant_id = hpe_morpheus_tenant.coke-master-tenant.id 
   group_id  = 1
