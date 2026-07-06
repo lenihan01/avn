@@ -4,13 +4,7 @@ resource "hpe_morpheus_role" "coke_tenant_role" {
   role_type   = "tenant"
   provider    = hpe.master-tenant
   permissions = {
-    default_blueprint_access = "full"
-    blueprint_permissions = [
-      {
-        "access": "full",
-        "id": data.hpe_morpheus_blueprint.ubuntu.id
-      }
-    ]
+    default_instance_type_access = "full"
     feature_permissions = [
     {
       "code": "activity",
@@ -464,13 +458,7 @@ resource "hpe_morpheus_role" "coke_admin_role" {
   role_type   = "user"
   provider    = hpe.master-tenant
   permissions = {
-    default_blueprint_access = "full"
-    blueprint_permissions = [
-      {
-        "access": "full",
-        "id": data.hpe_morpheus_blueprint.ubuntu.id
-      }
-    ]
+    default_instance_type_access = "full"
     default_group_access = "full"
     feature_permissions = [
     {
@@ -925,13 +913,7 @@ resource "hpe_morpheus_role" "coke_user_role" {
   provider    = hpe.master-tenant
   permissions = {
     default_group_access = "full"
-    default_blueprint_access = "full"
-    blueprint_permissions = [
-      {
-        "access": "full",
-        "id": data.hpe_morpheus_blueprint.ubuntu.id
-      }
-    ]
+    default_instance_type_access = "full"
     feature_permissions = [
     {
       "code": "activity",

@@ -1,4 +1,4 @@
-data "hpe_morpheus_blueprint" "ubuntu" {
+data "hpe_morpheus_instance_type" "ubuntu" {
   name        = "Ubuntu"
   provider    = hpe.master-tenant
 }
