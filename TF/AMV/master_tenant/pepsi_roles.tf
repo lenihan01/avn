@@ -462,6 +462,8 @@ resource "hpe_morpheus_role" "pepsi_admin_role" {
   permissions = {
     default_instance_type_access = "full"
     default_group_access = "full"
+    default_task_access          = "full"
+    default_workflow_access      = "full"
     feature_permissions = [
     {
       "code": "activity",
@@ -916,6 +918,8 @@ resource "hpe_morpheus_role" "pepsi_user_role" {
   permissions = {
     default_group_access = "full"
     default_instance_type_access = "full"
+    default_task_access          = "full"
+    default_workflow_access      = "full"
     feature_permissions = [
     {
       "code": "activity",
