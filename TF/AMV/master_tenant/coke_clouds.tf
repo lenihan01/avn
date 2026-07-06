@@ -13,7 +13,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
   visibility       = "private"
 
   agent_install_mode       = "ssh"
-  appliance_url            = "https://10.0.17.149"
+  appliance_url            = var.master_tenant_url 
   auto_recover_power_state = true
   import_existing_vms      = "off"
 
@@ -37,7 +37,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
 
   cloud_type_code = "vmware"
   config = {
-    apiUrl                       = "https://vcenter9.cs8.local"
+    apiUrl                       = var.coke_cloud_1_url 
     apiVersion                   = "7.0"
     datacenter                    = "DC9"
     cluster                       = "CL9"

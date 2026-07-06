@@ -35,3 +35,7 @@ variable "coke_cloud_password" {
   description = "Coke VMWare Cloud 1 password"
 }
 
+variable "coke_cloud_1_url" {
+  type        = string
+  description = "Coke Cloud 1 URL"
+}
