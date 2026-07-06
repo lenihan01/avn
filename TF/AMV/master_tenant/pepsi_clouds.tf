@@ -1,15 +1,15 @@
-resource "hpe_morpheus_cloud" "coke_vmware_1" {
-  name      = "Coke VMWare Cloud 1"
-  tenant_id = hpe_morpheus_tenant.coke-master-tenant.id 
+resource "hpe_morpheus_cloud" "pepsi_vmware_1" {
+  name      = "Pepsi VMWare Cloud 1"
+  tenant_id = hpe_morpheus_tenant.pepsi-master-tenant.id 
   group_id  = 1
 
   provider  = hpe.master-tenant
-  code             = "cokevmwarecloud1"
-  external_id      = "cokevmwarecloud1"
+  code             = "pepsivmwarecloud1"
+  external_id      = "peps1vmwarecloud1"
   labels           = ["aLabel1", "aLabel2"]
   data_center_name = "AMV"
   enabled          = true
-  location         = "AMV"
+  location         = "ALF"
   visibility       = "private"
 
   agent_install_mode       = "ssh"
@@ -37,12 +37,12 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
 
   cloud_type_code = "vmware"
   config = {
-    apiUrl                       = var.coke_cloud_1_url 
+    apiUrl                       = var.pepsi_cloud_1_url 
     apiVersion                   = "7.0"
-    datacenter                    = var.coke_cloud_1_dc 
-    cluster                       = var.coke_cloud_1_cluster 
+    datacenter                    = var.pepsi_cloud_1_dc 
+    cluster                       = var.pepsi_cloud_1_cluster 
     username                      = "administrator@vsphere.local"
-    password                      = var.coke_cloud_password 
+    password                      = var.pepsi_cloud_password 
     certificateProvider          = "internal"
     enable_hypervisor_console     = true
 #    enable_network_type_selection = false

@@ -31,3 +31,16 @@ provider "hpe" {
     tenant_subdomain = "coke"
   }
 }
+
+# Pepsi Master Tenant
+provider "hpe" {
+  alias = "pepsi-master-tenant"
+  # Configuration options
+  morpheus {
+    username = var.pepsi_admin_username
+    password = var.pepsi_admin_password
+    url      = var.master_tenant_url
+    insecure = true
+    tenant_subdomain = "pepsi"
+  }
+}
