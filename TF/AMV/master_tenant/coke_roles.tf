@@ -5,6 +5,8 @@ resource "hpe_morpheus_role" "coke_tenant_role" {
   provider    = hpe.master-tenant
   permissions = {
     default_instance_type_access = "full"
+    default_task_access          = "full"
+    default_workflow_access      = "full"
     feature_permissions = [
     {
       "code": "activity",
