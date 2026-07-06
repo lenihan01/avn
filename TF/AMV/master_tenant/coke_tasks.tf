@@ -5,6 +5,7 @@ resource "hpe_morpheus_task_shell_script" "coke_shell_task_1" {
   source_type         = "local"
   script_content      = <<EOF
   echo "Coke task testing"
+  hostname -a 
 EOF
   sudo                = true
   retryable           = true
