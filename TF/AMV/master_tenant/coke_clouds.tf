@@ -39,8 +39,8 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
   config = {
     apiUrl                       = var.coke_cloud_1_url 
     apiVersion                   = "7.0"
-    datacenter                    = "DC9"
-    cluster                       = "CL9"
+    datacenter                    = var.coke_cloud_1_dc 
+    cluster                       = var.coke_cloud_1_cluster 
     username                      = "administrator@vsphere.local"
     password                      = var.coke_cloud_password 
     certificateProvider          = "internal"
