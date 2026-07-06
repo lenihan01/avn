@@ -4,7 +4,7 @@ resource "hpe_morpheus_user" "coke_admin" {
   email                       = "${var.coke_admin_username}@testacc.com"
   password_wo                 = var.coke_admin_password
   password_wo_version         = 1
-  role_ids                    = [data.hpe_morpheus_role.coke_admin.id]
+  role_ids                    = [hpe_morpheus_role.coke_tenant_role.id]
   first_name                  = "Coke"
   last_name                   = "Admin"
   linux_username              = var.coke_admin_username
