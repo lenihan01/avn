@@ -3,7 +3,7 @@ resource "hpe_morpheus_tenant" "coke-master-tenant" {
   description     = "Coke Master Tenant"
   enabled         = true
   subdomain       = "coke"
-  base_role_id    = data.hpe_morpheus_role.coke_master.id
+  base_role_id    = hpe_morpheus_role.coke_tenant_role.id
   currency        = "USD"
   account_number  = "12345"
   account_name    = "tenant 12345"
