@@ -13,5 +13,8 @@ EOF
   allow_custom_config = true
 #  visibility          = "public"
   provider = hpe.coke-master-tenant
+  depends_on = [
+    hpe_morpheus_tenant.coke-master-tenant
+  ]
 }
 
