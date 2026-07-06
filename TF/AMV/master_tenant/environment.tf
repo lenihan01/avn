@@ -51,6 +51,12 @@ variable "coke_cloud_1_cluster" {
   description = "Coke Cloud 1 Cluster"
 }
 
+variable "coke_ubuntu_2404_node_type" {
+  type        = integer
+  description = "Coke Ubuntu 24.04 VMWare Node Type ID"
+  default     = 365
+}
+
 # Pepsi
 variable "pepsi_admin_username" {
   type        = string

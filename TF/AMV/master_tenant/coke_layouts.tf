@@ -2,3 +2,13 @@ data "hpe_morpheus_instance_type_layout" "hvm" {
   name                        = "Single HVM"
   provider                    = hpe.master-tenant
 }
+
+resource "hpe_morpheus_instance_type_layout" "Ubuntu Wordpress VMWare Layout" {
+  instance_type_id = data.hpe_morpheus_instance_type.example.id
+  name             = "Ubuntu Wordpress VMWare Layout"
+  labels           = ["coke", "layout", "terraform"]
+  version          = "1.0"
+  technology       = "vmware"
+  node_type_ids    = [hpe_morpheus_node_type.ubuntu_2404_vmware.id]
+  workflow_id      = hpe_morpheus_workflow_provisioning.wordpress_workflow.id
+}
