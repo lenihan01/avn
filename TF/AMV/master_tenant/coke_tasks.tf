@@ -19,3 +19,19 @@ EOF
   ]
 }
 
+resource "hpe_morpheus_task_ansible_playbook" "wordpress_ubuntu" {
+  name                = "Wordpress Ubuntu"
+  code                = "wordpressubuntu"
+  labels              = ["coke", "terraform", "wordpress"]
+  ansible_repo_id     = hpe_morpheus_integration_ansible.coke_ansible_integration_1.id 
+  git_ref             = ""
+  playbook            = "wordpress_ub.yml"
+  tags                = ""
+  skip_tags           = ""
+  command_options     = ""
+  execute_target      = "resource"
+  retryable           = false 
+  retry_count         = 5 
+  retry_delay_seconds = 10
+  allow_custom_config = false 
+}
