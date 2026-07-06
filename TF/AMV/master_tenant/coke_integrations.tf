@@ -13,4 +13,7 @@ resource "hpe_morpheus_integration_ansible" "coke_ansible_integration_1" {
   enable_agent_command_bus      = true
   enable_git_caching            = false 
   provider                      = hpe.coke-master-tenant
+  depends_on = [
+    hpe_morpheus_tenant.coke-master-tenant
+  ]
 }
