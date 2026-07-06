@@ -8,7 +8,7 @@ resource "hpe_morpheus_role" "coke_tenant_role" {
     blueprint_permissions = [
       {
         "access": "Full",
-        "id": hpe_morpheus_blueprint.ubuntu.id
+        "id": data.hpe_morpheus_blueprint.ubuntu.id
       }
     ]
     feature_permissions = [
@@ -468,7 +468,7 @@ resource "hpe_morpheus_role" "coke_admin_role" {
     blueprint_permissions = [
       {
         "access": "Full",
-        "id": hpe_morpheus_blueprint.ubuntu.id
+        "id": data.hpe_morpheus_blueprint.ubuntu.id
       }
     ]
     default_group_access = "full"
@@ -929,7 +929,7 @@ resource "hpe_morpheus_role" "coke_user_role" {
     blueprint_permissions = [
       {
         "access": "Full",
-        "id": hpe_morpheus_blueprint.ubuntu.id
+        "id": data.hpe_morpheus_blueprint.ubuntu.id
       }
     ]
     feature_permissions = [
