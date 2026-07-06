@@ -34,4 +34,5 @@ resource "hpe_morpheus_task_ansible_playbook" "wordpress_ubuntu" {
   retry_count         = 5 
   retry_delay_seconds = 10
   allow_custom_config = false 
+  provider = hpe.coke-master-tenant
 }
