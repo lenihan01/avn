@@ -52,7 +52,7 @@ variable "coke_cloud_1_cluster" {
 }
 
 variable "coke_ubuntu_2404_node_type" {
-  type        = integer
+  type        = number 
   description = "Coke Ubuntu 24.04 VMWare Node Type ID"
   default     = 365
 }

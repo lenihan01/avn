@@ -3,7 +3,7 @@ data "hpe_morpheus_instance_type_layout" "hvm" {
   provider                    = hpe.master-tenant
 }
 
-resource "hpe_morpheus_instance_type_layout" "Ubuntu Wordpress VMWare Layout" {
+resource "hpe_morpheus_instance_type_layout" "ubuntu_wordpress_vmware_layout" {
   instance_type_id = data.hpe_morpheus_instance_type.example.id
   name             = "Ubuntu Wordpress VMWare Layout"
   labels           = ["coke", "layout", "terraform"]
