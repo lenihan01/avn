@@ -1,3 +1,3 @@
-data @hpe_morpheus_blueprint" "ubuntu" {
+data "hpe_morpheus_blueprint" "ubuntu" {
   name = "Ubuntu"
 }
