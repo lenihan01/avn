@@ -11,13 +11,12 @@ resource "hpe_morpheus_instance_type" "wordpress_ubuntu" {
   labels             = ["coke", "instance", "terraform", "wordpress"]
   category           = "web"
   visibility         = "private"
-  image_path         = "tfexample.png"
-  image_name         = "tfexample.png"
   featured           = false
   enable_deployments = true
   enable_scaling     = true
   enable_settings    = true
   environment_prefix = "TFEXAMPLE_DEMO"
+  provider = hpe.coke-master-tenant
 
   evar {
     name   = "first"

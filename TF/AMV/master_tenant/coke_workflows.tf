@@ -4,6 +4,7 @@ resource "hpe_morpheus_workflow_provisioning" "wordpress_workflow" {
   labels      = ["demo", "terraform"]
   platform    = "all"
   visibility  = "private"
+  provider    = hpe.coke-master-tenant
   task { 
     task_id    = hpe_morpheus_task_ansible_playbook.wordpress_ubuntu.id
     task_phase = "provision"
