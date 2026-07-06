@@ -4,7 +4,7 @@ data "hpe_morpheus_instance_type_layout" "hvm" {
 }
 
 resource "hpe_morpheus_instance_type_layout" "ubuntu_wordpress_vmware_layout" {
-  instance_type_id = data.hpe_morpheus_instance_type.example.id
+  instance_type_id = hpe_morpheus_instance_type.ubuntu.id
   name             = "Ubuntu Wordpress VMWare Layout"
   labels           = ["coke", "layout", "terraform"]
   version          = "1.0"
