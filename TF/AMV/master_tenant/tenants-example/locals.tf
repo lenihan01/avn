@@ -94,13 +94,13 @@ locals {
     "admin-containers",
 
     # Provisioning features.
-    #   provisioning-instances-list ("Provisioning: Instances" list/view) is
-    #     granted to EVERY tenant -- both the tenant_admin role and the base-role
-    #     ceiling (roles.tf) -- so each tenant admin can list its instances.
-    #     Unlike Coke's provisioning-* extras (tenant_extra_feature_codes, which
-    #     are Coke-only), this one is shared by all tenants, so it belongs in this
-    #     shared ceiling. Granted at "full" like the rest of this list.
-    "provisioning-instances-list",
+    #   provisioning ("Provisioning: Instances") is granted to EVERY tenant --
+    #     both the tenant_admin role and the base-role ceiling (roles.tf) -- so
+    #     each tenant admin can view/manage its instances. Unlike Coke's
+    #     provisioning-* extras (tenant_extra_feature_codes, which are Coke-only),
+    #     this one is shared by all tenants, so it belongs in this shared ceiling.
+    #     Granted at "full" like the rest of this list.
+    "provisioning",
   ]
 
   # Materialized feature-permission ceiling used by the base role (the ceiling
