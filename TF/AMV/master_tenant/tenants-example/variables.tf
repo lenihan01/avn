@@ -120,3 +120,19 @@ variable "pepsi_cloud_password" {
   description = "vCenter password for the Pepsi VMware cloud."
   sensitive   = true
 }
+
+# --- Ansible integration (Coke tenant) ---------------------------------------
+# integrations.tf creates one Ansible (git) integration inside the Coke
+# sub-tenant. Defaults to the public Morpheus sample repository (no credentials);
+# override coke_ansible_url (and add auth on the resource) for a private repo.
+variable "coke_ansible_url" {
+  type        = string
+  description = "Git repository URL for the Coke tenant's Ansible integration."
+  default     = "https://github.com/gomorpheus/morpheus-ansible.git"
+}
+
+variable "coke_ansible_branch" {
+  type        = string
+  description = "Default branch of the Coke tenant's Ansible repository."
+  default     = "master"
+}

@@ -50,3 +50,8 @@ output "tenant_expiration_policy_ids" {
     pepsi = hpe_morpheus_policy.pepsi_expiration.id
   }
 }
+
+output "coke_ansible_integration_id" {
+  description = "Id of the Coke tenant's Ansible integration (created inside the Coke sub-tenant)."
+  value       = hpe_morpheus_integration_ansible.coke.id
+}

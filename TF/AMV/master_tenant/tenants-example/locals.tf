@@ -22,9 +22,10 @@ locals {
   # `terraform apply` -- only ADDING a new code to this list raises the ceiling,
   # which is not retroactive and needs the tenant to be recreated.
   #
-  # Scoped to tenant-relevant Administration features; appliance/master-only
-  # codes (admin-appliance, admin-licenses, admin-plugins, admin-clients,
-  # admin-packages, admin-health, admin-whitelabel) are intentionally omitted.
+  # Scoped to tenant-relevant Administration and integration features;
+  # appliance/master-only codes (admin-appliance, admin-licenses, admin-plugins,
+  # admin-clients, admin-packages, admin-health, admin-whitelabel) are
+  # intentionally omitted.
   tenant_ceiling_features = [
     "admin-roles",
     "admin-users",
@@ -46,6 +47,10 @@ locals {
     "admin-guidanceSettings",
     "admin-logSettings",
     "admin-identity-sources",
+
+    # Integration features. integrations-ansible lets a tenant admin create the
+    # Ansible integration (integrations.tf) through the sub-tenant provider.
+    "integrations-ansible",
   ]
 
   # Bootstrap admin credentials per tenant. These users are created via the
