@@ -74,6 +74,19 @@ locals {
     #     (workflows.tf).
     "tasks",
     "workflows",
+
+    # Library features.
+    #   admin-containers ("Library") gates the library instance-type create/
+    #     update/delete API the provider uses (POST/PUT/DELETE
+    #     /api/library/instance-types) -- verified in the Morpheus
+    #     LibraryInstanceTypesController, whose class requires admin-containers at
+    #     "read"/"full" and whose save/update/delete actions each require it at
+    #     "full" access. The Coke sub-tenant admin needs it to create the
+    #     instance type (instance_types.tf). NOTE: that endpoint is also gated by
+    #     the "library" appliance LICENSE feature (not a role permission) -- if the
+    #     appliance is not licensed for Library the create fails with a license
+    #     error rather than a 403.
+    "admin-containers",
   ]
 
   # Bootstrap admin credentials per tenant. These users are created via the

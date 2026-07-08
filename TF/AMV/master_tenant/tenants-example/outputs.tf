@@ -75,3 +75,8 @@ output "coke_provisioning_workflow_id" {
   description = "Id of the Coke tenant's provisioning workflow (runs the Coke Ansible playbook at the provision phase)."
   value       = hpe_morpheus_workflow_provisioning.coke.id
 }
+
+output "coke_instance_type_id" {
+  description = "Id of the Coke tenant's instance type (coke ubuntu wordpress)."
+  value       = hpe_morpheus_instance_type.coke_ubuntu_wordpress.id
+}
