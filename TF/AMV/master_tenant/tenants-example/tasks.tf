@@ -36,7 +36,7 @@ resource "hpe_morpheus_task_shell_script" "coke" {
   labels         = ["coke", "terraform"]
   source_type    = "local"
   script_content = "hostname\n"
-  execute_target = "local"
+  execute_target = "resource"
   result_type    = "value"
   sudo           = false
   retryable      = false
@@ -66,7 +66,7 @@ resource "hpe_morpheus_task_shell_script" "pepsi" {
   labels         = ["pepsi", "terraform"]
   source_type    = "local"
   script_content = "hostname\n"
-  execute_target = "local"
+  execute_target = "resource"
   result_type    = "value"
   sudo           = false
   retryable      = false

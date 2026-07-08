@@ -33,6 +33,7 @@ resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
   description = "Ubuntu WordPress instance type for the ${local.tenants["coke"].name} tenant."
   category    = "web"
   visibility  = "private"
+  featured    = true
   labels      = ["coke", "terraform"]
 
   # Tail of the Coke automation chain (integration -> shell task -> ansible task
