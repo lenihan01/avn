@@ -3,9 +3,9 @@ resource "hpe_morpheus_cluster" "example_hvm" {
   name        = "Coke HVM Cluster 1"
   provider    = hpe.coke-master-tenant
   description = "Coke HVM Cluster 1"
-  cloud_id    = hpe_morpheus_cloud.coke_vmware_1.id
-  group_id    = hpe_morpheus_group.coke_master_tenant_group_1.id
-  layout_id   = data.hpe_morpheus_instance_type_layout.hvm.id
+  cloud_id    = hpe_morpheus_cloud.coke_vmware_1.id 
+  group_id    = hpe_morpheus_group.coke_master_tenant_group_1.id 
+  layout_id   = data.hpe_morpheus_instance_type_layout.hvm.id 
 
   labels = [
     "terraform",

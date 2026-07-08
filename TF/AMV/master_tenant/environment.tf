@@ -12,7 +12,7 @@ variable "master_tenant_url" {
   type        = string
   description = "Master Tenant URL"
 }
-
+ 
 # Per-tenant variables
 # Coke
 variable "coke_admin_username" {
@@ -52,7 +52,7 @@ variable "coke_cloud_1_cluster" {
 }
 
 variable "coke_ubuntu_2404_node_type" {
-  type        = number
+  type        = number 
   description = "Coke Ubuntu 24.04 VMWare Node Type ID"
   default     = 365
 }

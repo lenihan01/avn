@@ -12,9 +12,9 @@ provider "hpe" {
   alias = "master-tenant"
   # Configuration options
   morpheus {
-    username = var.master_tenant_username
-    password = var.master_tenant_password
-    url      = var.master_tenant_url
+    username = var.master_tenant_username 
+    password = var.master_tenant_password 
+    url      = var.master_tenant_url 
     insecure = true
   }
 }
@@ -24,10 +24,10 @@ provider "hpe" {
   alias = "coke-master-tenant"
   # Configuration options
   morpheus {
-    username         = var.coke_admin_username
-    password         = var.coke_admin_password
-    url              = var.master_tenant_url
-    insecure         = true
+    username = var.coke_admin_username
+    password = var.coke_admin_password
+    url      = var.master_tenant_url
+    insecure = true
     tenant_subdomain = "coke"
   }
 }
@@ -37,10 +37,10 @@ provider "hpe" {
   alias = "pepsi-master-tenant"
   # Configuration options
   morpheus {
-    username         = var.pepsi_admin_username
-    password         = var.pepsi_admin_password
-    url              = var.master_tenant_url
-    insecure         = true
+    username = var.pepsi_admin_username
+    password = var.pepsi_admin_password
+    url      = var.master_tenant_url
+    insecure = true
     tenant_subdomain = "pepsi"
   }
 }

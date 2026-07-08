@@ -16,7 +16,7 @@ resource "hpe_morpheus_policy" "pepsi_expiration" {
     lifecycleType = "fixed" # Options: "user" (user configurable), "fixed" (fixed expiration)
 
     # Optional
-    lifecycleAge                      = "5"                         # Days until expiration
+    lifecycleAge                      = "5"                        # Days until expiration
     lifecycleRenewal                  = "7"                         # Days for renewal window
     lifecycleNotify                   = "1"                         # Days before expiration to notify
     lifecycleMessage                  = "Instance will expire soon" # Notification message

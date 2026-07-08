@@ -1,6 +1,6 @@
 data "hpe_morpheus_instance_type_layout" "hvm" {
-  name     = "Single HVM"
-  provider = hpe.master-tenant
+  name                        = "Single HVM"
+  provider                    = hpe.master-tenant
 }
 
 #resource "hpe_morpheus_instance_type_layout" "ubuntu_wordpress_vmware_layout" {
