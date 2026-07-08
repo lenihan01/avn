@@ -35,11 +35,13 @@ resource "hpe_morpheus_integration_ansible" "coke" {
   url                           = var.coke_ansible_url
   default_branch                = var.coke_ansible_branch
   playbooks_path                = "/"
-  roles_path                    = "/roles"
-  group_variables_path          = "/vars"
-  host_variables_path           = "/vars"
+  roles_path                    = "roles"
+  group_variables_path          = "group_vars"
+  host_variables_path           = "/"
   enable_ansible_galaxy_install = true
-  enable_git_caching            = true
+  enable_verbose_logging        = true
+  enable_agent_command_bus      = true
+  enable_git_caching            = false
 
   depends_on = [
     terraform_data.admin,
