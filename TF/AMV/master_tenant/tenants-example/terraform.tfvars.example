@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and fill in real values (terraform.tfvars is
+# git-ignored by convention -- keep credentials out of version control).
+morpheus_url      = "https://morpheus.example.local"
+morpheus_username = "master-admin"
+morpheus_password = "change-me"
+morpheus_insecure = true
