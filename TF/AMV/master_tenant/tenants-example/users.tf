@@ -2,32 +2,43 @@
 # Tenant users
 #
 # Sub-tenant users require role_ids, but a multitenant master role's id cannot
-# be assigned directly: Morpheus swaps in the sub-tenant's local copy of the
+# be assigned directly: Morpheus swaps in the sub-tenant's LOCAL copy of the
 # role at apply time, which breaks the provider's post-apply consistency check
 # ("planned ... does not correlate with any element in actual").
 #
-# This module resolves each tenant's LOCAL role id with a hpe_morpheus_role
-# data source scoped to that sub-tenant, then assigns that id to the generated
-# users -- so planned == actual and no error occurs.
+# Two mechanisms sidestep that here:
 #
-# The data sources authenticate as each tenant's bootstrap admin, so an admin
-# must exist first. The admin can't use the data source to find its own role
-# (it would have to exist before it could authenticate), so its role is
-# assigned with the terraform_data unknown-at-plan trick plus ignore_changes:
-# an unknown set element passes the create-time consistency check, and
-# ignore_changes stops later plans from re-introducing the mismatch.
+#  1. Bootstrap admin (one per tenant, created by the master provider): its
+#     role_ids reference a terraform_data helper whose `output` is UNKNOWN at
+#     plan time, so whatever id Morpheus returns still satisfies the consistency
+#     check. triggers_replace = [timestamp()] recreates the helper on every
+#     apply, keeping output unknown even on re-applies (so a tainted admin can
+#     always be recreated cleanly), and ignore_changes = [role_ids] stops later
+#     plans from "correcting" the stored tenant-local id. Trade-off: the two
+#     helper resources always show as "will be replaced" in the plan. (If you
+#     prefer no perpetual diff, drop triggers_replace -- but then a failed admin
+#     create must be cleared with `terraform state rm` before re-applying.)
+#
+#  2. Standard users: assigned the tenant-LOCAL role id resolved by a
+#     hpe_morpheus_role data source scoped to the sub-tenant (authenticated as
+#     the bootstrap admin), so planned == actual and no workaround is needed.
 ###############################################################################
 
 # --- Bootstrap admin, one per tenant --------------------------------------
 
-# Makes role_ids unknown at plan time on create. An unknown set element
-# satisfies the provider's consistency check, so the create is not rejected
-# when Morpheus substitutes the tenant-local copy of the role id.
+# Launders the (known) admin role id into an UNKNOWN-at-plan value: `output` is
+# computed and only set at apply, and triggers_replace = [timestamp()] recreates
+# this every apply so output is unknown on every plan -- including re-applies,
+# which is what makes admin creation robust against the role_ids swap.
 resource "terraform_data" "admin_role_ref" {
   for_each = local.tenants
-  input    = hpe_morpheus_role.tenant_admin[each.key].id
+
+  input            = hpe_morpheus_role.tenant_admin[each.key].id
+  triggers_replace = [timestamp()]
 }
 
+# Created by the master provider (tenant_id targets the sub-tenant). The
+# sub-tenant providers in providers.tf then authenticate as this user.
 resource "hpe_morpheus_user" "admin" {
   for_each = local.tenants
 
@@ -41,17 +52,19 @@ resource "hpe_morpheus_user" "admin" {
   role_ids            = [terraform_data.admin_role_ref[each.key].output]
 
   lifecycle {
-    # Morpheus returns the tenant-local role id (not the master id we sent);
-    # ignore it so subsequent plans don't try to "correct" it and re-trigger
-    # the consistency error.
+    # Morpheus returns the tenant-local copy of the role id, not the master id
+    # we sent; ignore it so subsequent plans don't try to "correct" it and
+    # re-trigger the consistency error.
     ignore_changes = [role_ids]
   }
 }
 
 # --- Resolve each tenant's local user-role id -----------------------------
-# Provider aliases can't be selected dynamically (no for_each over providers),
-# so these are declared per tenant. depends_on defers the read until the admin
-# exists (for auth) and the multitenant role has been copied into the tenant.
+# Read through the sub-tenant providers (authenticated as the bootstrap admin)
+# to get the tenant-LOCAL copy of the multitenant user role. Provider aliases
+# can't be selected dynamically (no for_each over providers), so these are
+# declared once per tenant. depends_on defers the read until the admin exists
+# (for auth) and the multitenant role has been copied into the tenant.
 
 data "hpe_morpheus_role" "coke_user_role" {
   provider = hpe.coke

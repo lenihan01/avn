@@ -14,12 +14,12 @@ output "tenant_user_role_ids" {
 }
 
 output "tenant_admin_role_ids" {
-  description = "Map of tenant key => admin role id (master copy)."
+  description = "Map of tenant key => admin role id (master copy). Morpheus assigns the tenant-local copy to the Terraform-managed bootstrap admin."
   value       = { for k, r in hpe_morpheus_role.tenant_admin : k => r.id }
 }
 
 output "tenant_admin_user_ids" {
-  description = "Map of tenant key => bootstrap admin user id."
+  description = "Map of tenant key => Terraform-managed bootstrap admin user id."
   value       = { for k, u in hpe_morpheus_user.admin : k => u.id }
 }
 

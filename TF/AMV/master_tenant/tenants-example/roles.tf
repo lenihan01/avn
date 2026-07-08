@@ -57,9 +57,10 @@ resource "hpe_morpheus_role" "tenant_user" {
   }
 }
 
-# Tenant administrator role -- assigned to each tenant's bootstrap admin user.
-# Broad access so the sub-tenant provider (authenticating as this admin) can
-# read the tenant's roles for the data-source lookups in users.tf.
+# Tenant administrator role -- assigned to each tenant's Terraform-managed
+# bootstrap admin (users.tf), the user the sub-tenant providers authenticate
+# as. Grant it enough access to read the tenant's roles so the data-source
+# lookups in users.tf succeed.
 #
 # NOTE: depending on your Morpheus RBAC, reading roles may additionally require
 # an explicit roles feature permission, e.g.:

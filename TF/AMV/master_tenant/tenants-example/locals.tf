@@ -13,12 +13,10 @@ locals {
       description = "Pepsi tenant"
     }
   }
-}
 
-# Per-tenant bootstrap administrator credentials, keyed to match local.tenants.
-# Mapping the sensitive admin variables here lets the admin user (users.tf) be
-# driven with for_each instead of one hand-written block per tenant.
-locals {
+  # Bootstrap admin credentials per tenant. Terraform creates these users
+  # (users.tf); the sub-tenant providers (providers.tf) then authenticate as
+  # them to resolve tenant-local roles.
   admin_creds = {
     coke = {
       username = var.coke_admin_username
