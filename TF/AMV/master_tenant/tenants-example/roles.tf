@@ -111,13 +111,14 @@ resource "hpe_morpheus_role" "tenant_admin" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Lets the admin read roles for the sub-tenant role data sources (users.tf),
-    # create the per-tenant infrastructure group in clouds.tf, and view/manage
-    # clouds under the Administration menu.
+    # Grant the tenant admin the full ceiling (local.tenant_ceiling_features), so
+    # it is a complete administrator over the tenant's Administration features --
+    # reading roles for the sub-tenant data sources (users.tf), creating the
+    # infrastructure group (clouds.tf), and managing clouds, servers, policies,
+    # etc. Because this matches the base-role ceiling, every code survives into
+    # the tenant-local copy.
     feature_permissions = [
-      { code = "admin-roles", access = "full" },
-      { code = "admin-groups", access = "full" },
-      { code = "admin-zones", access = "full" },
+      for code in local.tenant_ceiling_features : { code = code, access = "full" }
     ]
   }
 }
