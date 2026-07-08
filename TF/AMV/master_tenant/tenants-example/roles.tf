@@ -1,6 +1,15 @@
 # Base "tenant" role -- one per tenant. Every hpe_morpheus_tenant requires a
 # base role (base_role_id); it defines the default account-level access granted
 # to the tenant.
+#
+# IMPORTANT: the base (account) role also acts as the PERMISSION CEILING for the
+# tenant. When a multitenant master role is copied into this tenant, the copy's
+# permissions are masked down to whatever the base role grants. If the base role
+# grants no feature permissions, every copied role has its feature permissions
+# stripped -- e.g. the tenant_admin role's "admin-roles" permission is dropped
+# from its tenant-local copy, so the tenant admin gets HTTP 403 when the
+# hpe_morpheus_role data sources try to list roles. We therefore grant
+# admin-roles here so that permission survives into the copied tenant_admin role.
 resource "hpe_morpheus_role" "tenant_base" {
   for_each = local.tenants
 
@@ -20,6 +29,14 @@ resource "hpe_morpheus_role" "tenant_base" {
     default_task_access              = "full"
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
+
+    # Raise the tenant's feature-permission ceiling so admin capabilities granted
+    # to tenant roles (e.g. tenant_admin's admin-roles) are not masked out of
+    # their tenant-local copies.
+    feature_permissions = [
+      { code = "admin-roles", access = "full" },
+      { code = "admin-users", access = "full" },
+    ]
   }
 }
 
