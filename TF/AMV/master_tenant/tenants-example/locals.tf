@@ -14,6 +14,40 @@ locals {
     }
   }
 
+  # Feature-permission ceiling shared by every tenant's base role (roles.tf).
+  # The base (account) role caps what any role in the tenant may grant, and that
+  # cap is materialized when roles are seeded into the tenant. It is deliberately
+  # broad here so that granting any of these to the (multitenant) tenant_admin /
+  # tenant_user roles later propagates to the sub-tenant copies on a plain
+  # `terraform apply` -- only ADDING a new code to this list raises the ceiling,
+  # which is not retroactive and needs the tenant to be recreated.
+  #
+  # Scoped to tenant-relevant Administration features; appliance/master-only
+  # codes (admin-appliance, admin-licenses, admin-plugins, admin-clients,
+  # admin-packages, admin-health, admin-whitelabel) are intentionally omitted.
+  tenant_ceiling_features = [
+    "admin-roles",
+    "admin-users",
+    "admin-groups",
+    "admin-zones",
+    "admin-servers",
+    "admin-server-software",
+    "admin-server-devices",
+    "admin-servicePlans",
+    "admin-policies",
+    "admin-global-policies",
+    "admin-environments",
+    "admin-keypairs",
+    "admin-certificates",
+    "admin-profiles",
+    "admin-provisioningSettings",
+    "admin-backupSettings",
+    "admin-monitorSettings",
+    "admin-guidanceSettings",
+    "admin-logSettings",
+    "admin-identity-sources",
+  ]
+
   # Bootstrap admin credentials per tenant. These users are created via the
   # Morpheus API in users.tf (local-exec); the sub-tenant providers
   # (providers.tf) then authenticate as them to resolve tenant-local roles.

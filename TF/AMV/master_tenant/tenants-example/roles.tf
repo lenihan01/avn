@@ -8,11 +8,23 @@
 # grants no feature permissions, every copied role has its feature permissions
 # stripped -- e.g. the tenant_admin role's "admin-roles" permission is dropped
 # from its tenant-local copy, so the tenant admin gets HTTP 403 when the
-# hpe_morpheus_role data sources try to list roles. We therefore grant
-# admin-roles here so that permission survives into the copied tenant_admin role.
-# We likewise grant admin-groups and admin-zones so each tenant's bootstrap admin
-# can create the per-tenant infrastructure group backing its VMware cloud and
-# manage clouds under the Administration menu (clouds.tf).
+# hpe_morpheus_role data sources try to list roles.
+#
+# The tenant_admin and tenant_user roles below are multitenant: the master owns
+# them and Morpheus propagates master-side edits down to each sub-tenant's copy
+# automatically (a plain `terraform apply` suffices) -- unless the copy is masked
+# by this ceiling. So we set a deliberately BROAD ceiling here
+# (local.tenant_ceiling_features) covering the common tenant Administration
+# features, so granting any of them to a tenant role later reaches the sub-tenant
+# copy without recreating anything.
+#
+# Note the asymmetry: raising THIS ceiling (adding a code to the list) is applied
+# only when roles are seeded into the tenant, so it is NOT retroactive -- an
+# existing tenant must be recreated to pick up a newly added ceiling code (that
+# is why enabling admin-zones on an already-deployed tenant needed a
+# destroy/apply). Granting a permission that is ALREADY within the ceiling to a
+# tenant role propagates with no recreate. Keeping the ceiling wide up front
+# avoids future recreates.
 resource "hpe_morpheus_role" "tenant_base" {
   for_each = local.tenants
 
@@ -33,14 +45,11 @@ resource "hpe_morpheus_role" "tenant_base" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Raise the tenant's feature-permission ceiling so admin capabilities granted
-    # to tenant roles (e.g. tenant_admin's admin-roles/admin-groups/admin-zones)
-    # are not masked out of their tenant-local copies.
+    # Deliberately broad ceiling -- see local.tenant_ceiling_features and the
+    # header comment. Granting any of these to a tenant role later propagates to
+    # the sub-tenant copy without recreating the tenant.
     feature_permissions = [
-      { code = "admin-roles", access = "full" },
-      { code = "admin-users", access = "full" },
-      { code = "admin-groups", access = "full" },
-      { code = "admin-zones", access = "full" },
+      for code in local.tenant_ceiling_features : { code = code, access = "full" }
     ]
   }
 }
