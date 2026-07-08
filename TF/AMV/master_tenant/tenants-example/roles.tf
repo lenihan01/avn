@@ -45,10 +45,12 @@ resource "hpe_morpheus_role" "tenant_base" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Deliberately broad ceiling -- see local.tenant_ceiling_permissions and the
-    # header comment. Granting any of these to a tenant role later propagates to
-    # the sub-tenant copy without recreating the tenant.
-    feature_permissions = local.tenant_ceiling_permissions
+    # Per-tenant ceiling -- the shared broad ceiling (tenant_ceiling_permissions)
+    # plus any per-tenant extras (tenant_extra_feature_codes; e.g. Coke's
+    # provisioning-* features). See those locals and the header comment. Granting
+    # any of these to a tenant role later propagates to the sub-tenant copy
+    # without recreating the tenant.
+    feature_permissions = local.tenant_role_permissions[each.key]
   }
 }
 
@@ -119,12 +121,14 @@ resource "hpe_morpheus_role" "tenant_admin" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Grant the tenant admin the full ceiling (local.tenant_ceiling_permissions),
-    # so it is a complete administrator over the tenant's Administration features
-    # -- reading roles for the sub-tenant data sources (users.tf), creating the
+    # Grant the tenant admin the tenant's full ceiling
+    # (local.tenant_role_permissions[each.key] -- the shared ceiling plus any
+    # per-tenant extras, such as Coke's provisioning-* features), so it is a
+    # complete administrator over the tenant's Administration features -- reading
+    # roles for the sub-tenant data sources (users.tf), creating the
     # infrastructure group (clouds.tf), and managing clouds, servers, policies,
     # etc. Because this matches the base-role ceiling, every code survives into
     # the tenant-local copy.
-    feature_permissions = local.tenant_ceiling_permissions
+    feature_permissions = local.tenant_role_permissions[each.key]
   }
 }

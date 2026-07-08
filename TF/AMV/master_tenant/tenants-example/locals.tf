@@ -104,6 +104,57 @@ locals {
     [{ code = "admin-health", access = "read" }],
   )
 
+  # Per-tenant EXTRA feature permissions, layered on top of the shared ceiling
+  # (tenant_ceiling_permissions) for that tenant's base (ceiling) AND admin roles
+  # (roles.tf). Keyed by tenant; a tenant with no entry gets no extras. Because
+  # the base role is the tenant's permission ceiling, listing a code here -- which
+  # also feeds the base role -- is what lets the admin role's sub-tenant copy keep
+  # it.
+  #
+  # Coke additionally gets every provisioning-* feature at "full" access. As with
+  # any ceiling change this is NOT retroactive: the Coke tenant must be recreated
+  # (destroy/apply) for the raised ceiling to reach its tenant-local admin copy.
+  tenant_extra_feature_codes = {
+    coke = [
+      "provisioning-add",
+      "provisioning-admin",
+      "provisioning-clone",
+      "provisioning-delete",
+      "provisioning-edit",
+      "provisioning-environment",
+      "provisioning-execute-script",
+      "provisioning-execute-task",
+      "provisioning-execute-workflow",
+      "provisioning-force-delete",
+      "provisioning-import-image",
+      "provisioning-lock",
+      "provisioning-power",
+      "provisioning-reconfigure",
+      "provisioning-reconfigure-add-disk",
+      "provisioning-reconfigure-add-network",
+      "provisioning-reconfigure-change-plan",
+      "provisioning-reconfigure-disk-type",
+      "provisioning-reconfigure-modify-disk",
+      "provisioning-reconfigure-modify-network",
+      "provisioning-reconfigure-remove-disk",
+      "provisioning-reconfigure-remove-network",
+      "provisioning-remove-control",
+      "provisioning-scale",
+      "provisioning-settings",
+      "provisioning-state",
+    ]
+  }
+
+  # Full feature-permission list applied to each tenant's base + admin roles: the
+  # shared ceiling (tenant_ceiling_permissions) plus that tenant's extras at
+  # "full" access. Tenants with no extras just get the shared ceiling.
+  tenant_role_permissions = {
+    for tenant in keys(local.tenants) : tenant => concat(
+      local.tenant_ceiling_permissions,
+      [for code in lookup(local.tenant_extra_feature_codes, tenant, []) : { code = code, access = "full" }],
+    )
+  }
+
   # Bootstrap admin credentials per tenant. These users are created via the
   # Morpheus API in users.tf (local-exec); the sub-tenant providers
   # (providers.tf) then authenticate as them to resolve tenant-local roles.
