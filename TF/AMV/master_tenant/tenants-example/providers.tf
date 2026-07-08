@@ -12,14 +12,15 @@ provider "hpe" {
 # Sub-tenant providers. Each authenticates as that tenant's bootstrap admin,
 # which is created via the Morpheus API in users.tf.
 #
-# IMPORTANT: we do NOT use the `tenant_subdomain` attribute. In provider v1.5.0
-# it is formatted with a DOUBLED backslash -- morpheus/sdkv2/client/client.go
-# builds the login name with a Go raw-string literal `fmt.Sprintf(`%s\\%s`, ...)`,
-# which yields "coke\\coke-admin" (two backslashes) instead of the required
-# "coke\coke-admin" (one). That makes every sub-tenant login fail with a 401,
-# which the role data source surfaces as "GET failed for role ...". Instead we
-# embed the correct single-backslash "subdomain\username" directly in `username`
-# (Morpheus form-encodes the backslash to %5C), which authenticates correctly.
+# The login is written as "subdomain\username" (a single backslash) directly in
+# `username`. That is the format the Morpheus API expects for a sub-tenant user;
+# it is form-encoded to "subdomain%5Cusername" on the wire (e.g. "2%5Cjdoe" in
+# the provider's own API docs). We embed it here rather than using the provider's
+# `tenant_subdomain` attribute because, in v1.5.0, tenant_subdomain composes the
+# login with a DOUBLED backslash (morpheus/utils/clientfactory/clientfactory.go:
+# `fmt.Sprintf(`%s\\%s`, ...)` -> "coke\\coke-admin"). This Morpheus happens to
+# accept the doubled form, but the single-backslash login above is what the
+# documented API contract specifies.
 #
 # Login is lazy (per request), so these providers can be configured before the
 # admin exists; the data sources that use them (users.tf) depend_on the admin
