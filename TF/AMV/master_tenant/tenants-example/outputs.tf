@@ -12,3 +12,23 @@ output "tenant_user_role_ids" {
   description = "Map of tenant key => standard user role id (master copy)."
   value       = { for k, r in hpe_morpheus_role.tenant_user : k => r.id }
 }
+
+output "tenant_admin_role_ids" {
+  description = "Map of tenant key => admin role id (master copy)."
+  value       = { for k, r in hpe_morpheus_role.tenant_admin : k => r.id }
+}
+
+output "tenant_admin_user_ids" {
+  description = "Map of tenant key => bootstrap admin user id."
+  value       = { for k, u in hpe_morpheus_user.admin : k => u.id }
+}
+
+output "coke_user_ids" {
+  description = "Ids of the generated Coke tenant users (coke_user[*])."
+  value       = hpe_morpheus_user.coke_user[*].id
+}
+
+output "pepsi_user_ids" {
+  description = "Ids of the generated Pepsi tenant users (pepsi_user[*])."
+  value       = hpe_morpheus_user.pepsi_user[*].id
+}

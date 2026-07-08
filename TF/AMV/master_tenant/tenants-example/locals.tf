@@ -14,3 +14,19 @@ locals {
     }
   }
 }
+
+# Per-tenant bootstrap administrator credentials, keyed to match local.tenants.
+# Mapping the sensitive admin variables here lets the admin user (users.tf) be
+# driven with for_each instead of one hand-written block per tenant.
+locals {
+  admin_creds = {
+    coke = {
+      username = var.coke_admin_username
+      password = var.coke_admin_password
+    }
+    pepsi = {
+      username = var.pepsi_admin_username
+      password = var.pepsi_admin_password
+    }
+  }
+}

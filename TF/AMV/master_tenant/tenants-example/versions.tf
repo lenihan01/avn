@@ -1,5 +1,6 @@
 terraform {
-  required_version = ">= 1.5.0"
+  # >= 1.11 is required for the write-only "password_wo" user attribute.
+  required_version = ">= 1.11.0"
 
   required_providers {
     hpe = {

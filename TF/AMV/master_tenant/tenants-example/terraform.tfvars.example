@@ -4,3 +4,17 @@ morpheus_url      = "https://morpheus.example.local"
 morpheus_username = "master-admin"
 morpheus_password = "change-me"
 morpheus_insecure = true
+
+# Bootstrap admin created in each tenant. The sub-tenant providers authenticate
+# as these users (subdomain\username), so they must be able to read roles.
+coke_admin_username  = "coke-admin"
+coke_admin_password  = "change-me"
+pepsi_admin_username = "pepsi-admin"
+pepsi_admin_password = "change-me"
+
+# Password applied to every generated tenant user (coke_user*/pepsi_user*).
+user_password = "change-me"
+
+# Number of standard users per tenant: coke_user[0-2], pepsi_user[0-4].
+coke_user_count  = 3
+pepsi_user_count = 5
