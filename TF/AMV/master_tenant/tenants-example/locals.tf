@@ -120,9 +120,10 @@ locals {
   # also feeds the base role -- is what lets the admin role's sub-tenant copy keep
   # it.
   #
-  # Coke additionally gets every provisioning-* feature at "full" access. As with
-  # any ceiling change this is NOT retroactive: the Coke tenant must be recreated
-  # (destroy/apply) for the raised ceiling to reach its tenant-local admin copy.
+  # Coke additionally gets every provisioning-* feature at "full" access, plus the
+  # "terminal" feature. As with any ceiling change this is NOT retroactive: the
+  # Coke tenant must be recreated (destroy/apply) for the raised ceiling to reach
+  # its tenant-local admin copy.
   tenant_extra_feature_codes = {
     coke = [
       "provisioning-add",
@@ -151,6 +152,8 @@ locals {
       "provisioning-scale",
       "provisioning-settings",
       "provisioning-state",
+
+      "terminal",
     ]
   }
 
