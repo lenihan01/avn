@@ -7,15 +7,20 @@
 # the Coke sub-tenant provider (hpe.coke), which logs in as the bootstrap admin,
 # and therefore lives inside the Coke tenant.
 #
-# The bootstrap admin needs the "integrations-ansible" feature permission to
-# create it. That code is granted on the tenant_admin role AND raised in the
-# tenant_base ceiling (both derive feature_permissions from
-# local.tenant_ceiling_features in roles.tf) so it survives into the tenant-local
-# admin copy. NOTE: "integrations-ansible" was newly ADDED to that ceiling for
-# this integration, and raising the ceiling is NOT retroactive -- an already-
-# deployed Coke tenant may need a destroy/apply (or a targeted replace of
-# hpe_morpheus_tenant.this["coke"]) before the permission reaches the existing
-# tenant-local admin copy. A fresh apply picks it up with no extra steps.
+# The bootstrap admin needs the "admin-cm" ("Integrations") feature permission to
+# create the integration: the provider POSTs to /api/integrations, whose save
+# action requires admin-cm (or infrastructure-network-integrations) at "full"
+# access -- verified in the Morpheus IntegrationsController. (integrations-ansible
+# gates a DIFFERENT endpoint -- the ansible provisioning controller -- and is kept
+# in the ceiling so the admin can USE the integration, but it does NOT authorize
+# the create call.) Both codes are granted on the tenant_admin role AND raised in
+# the tenant_base ceiling (both derive feature_permissions from
+# local.tenant_ceiling_features in roles.tf) so they survive into the tenant-local
+# admin copy. NOTE: admin-cm was newly ADDED to that ceiling, and raising the
+# ceiling is NOT retroactive -- an already-deployed Coke tenant must be recreated
+# (destroy/apply, or a targeted -replace=hpe_morpheus_tenant.this["coke"]) before
+# the permission reaches the existing tenant-local admin copy. A fresh apply picks
+# it up with no extra steps.
 #
 # Only the Coke tenant was requested, so -- unlike the group/cloud/policy which
 # fan out over both tenants -- this is declared once, for Coke. depends_on defers
