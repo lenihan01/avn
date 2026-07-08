@@ -22,23 +22,23 @@ variable "morpheus_insecure" {
 
 variable "coke_admin_username" {
   type        = string
-  description = "Username for the bootstrap administrator Terraform creates in the Coke tenant (users.tf). The Coke sub-tenant provider authenticates as this user."
+  description = "Username for the bootstrap administrator created via the Morpheus API in the Coke tenant (users.tf). The Coke sub-tenant provider authenticates as this user."
 }
 
 variable "coke_admin_password" {
   type        = string
-  description = "Password for the Terraform-managed Coke tenant bootstrap administrator."
+  description = "Password for the Coke tenant bootstrap administrator (created via the Morpheus API in users.tf)."
   sensitive   = true
 }
 
 variable "pepsi_admin_username" {
   type        = string
-  description = "Username for the bootstrap administrator Terraform creates in the Pepsi tenant (users.tf). The Pepsi sub-tenant provider authenticates as this user."
+  description = "Username for the bootstrap administrator created via the Morpheus API in the Pepsi tenant (users.tf). The Pepsi sub-tenant provider authenticates as this user."
 }
 
 variable "pepsi_admin_password" {
   type        = string
-  description = "Password for the Terraform-managed Pepsi tenant bootstrap administrator."
+  description = "Password for the Pepsi tenant bootstrap administrator (created via the Morpheus API in users.tf)."
   sensitive   = true
 }
 

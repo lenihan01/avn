@@ -10,11 +10,12 @@ provider "hpe" {
 }
 
 # Sub-tenant providers. Each authenticates as that tenant's bootstrap admin,
-# which Terraform creates in users.tf (tenant_subdomain prepends "<subdomain>\"
-# to the username at login, so the admin must be a user in that tenant). Login
-# is lazy (per request), so these providers can be configured before the admin
-# exists; the data sources that use them (users.tf) depend_on the admin user
-# and are deferred to apply time, so everything is created in a single apply.
+# which is created via the Morpheus API in users.tf (tenant_subdomain prepends
+# "<subdomain>\" to the username at login, so the admin must be a user in that
+# tenant). Login is lazy (per request), so these providers can be configured
+# before the admin exists; the data sources that use them (users.tf) depend_on
+# the admin bootstrap and are deferred to apply time, so everything is created
+# in a single apply.
 provider "hpe" {
   alias = "coke"
   morpheus {

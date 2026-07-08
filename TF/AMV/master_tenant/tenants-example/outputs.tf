@@ -18,9 +18,9 @@ output "tenant_admin_role_ids" {
   value       = { for k, r in hpe_morpheus_role.tenant_admin : k => r.id }
 }
 
-output "tenant_admin_user_ids" {
-  description = "Map of tenant key => Terraform-managed bootstrap admin user id."
-  value       = { for k, u in hpe_morpheus_user.admin : k => u.id }
+output "tenant_admin_usernames" {
+  description = "Map of tenant key => bootstrap admin username (created via the Morpheus API in users.tf)."
+  value       = { for k, v in local.admin_creds : k => v.username }
 }
 
 output "coke_user_ids" {

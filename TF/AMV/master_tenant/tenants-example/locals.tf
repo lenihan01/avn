@@ -14,9 +14,9 @@ locals {
     }
   }
 
-  # Bootstrap admin credentials per tenant. Terraform creates these users
-  # (users.tf); the sub-tenant providers (providers.tf) then authenticate as
-  # them to resolve tenant-local roles.
+  # Bootstrap admin credentials per tenant. These users are created via the
+  # Morpheus API in users.tf (local-exec); the sub-tenant providers
+  # (providers.tf) then authenticate as them to resolve tenant-local roles.
   admin_creds = {
     coke = {
       username = var.coke_admin_username

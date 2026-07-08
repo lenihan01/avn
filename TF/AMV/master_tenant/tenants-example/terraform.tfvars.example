@@ -5,9 +5,9 @@ morpheus_username = "master-admin"
 morpheus_password = "change-me"
 morpheus_insecure = true
 
-# Bootstrap admin Terraform creates in each tenant (users.tf). The sub-tenant
-# providers authenticate as these users (subdomain\username) to resolve
-# tenant-local roles.
+# Bootstrap admin created via the Morpheus API in each tenant (users.tf
+# local-exec). The sub-tenant providers authenticate as these users
+# (subdomain\username) to resolve tenant-local roles.
 coke_admin_username  = "coke-admin"
 coke_admin_password  = "change-me"
 pepsi_admin_username = "pepsi-admin"

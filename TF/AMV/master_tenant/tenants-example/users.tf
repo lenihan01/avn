@@ -2,60 +2,59 @@
 # Tenant users
 #
 # Sub-tenant users require role_ids, but a multitenant master role's id cannot
-# be assigned directly: Morpheus swaps in the sub-tenant's LOCAL copy of the
-# role at apply time, which breaks the provider's post-apply consistency check
-# ("planned ... does not correlate with any element in actual").
+# be assigned directly through the hpe_morpheus_user resource: Morpheus swaps in
+# the sub-tenant's LOCAL copy of the role at apply time, which breaks the
+# provider's post-apply consistency check ("planned ... does not correlate with
+# any element in actual"). This is a provider bug (the resource echoes back the
+# local role id for a Required field).
 #
-# Two mechanisms sidestep that here:
+# Two mechanisms are used here:
 #
-#  1. Bootstrap admin (one per tenant, created by the master provider): its
-#     role_ids reference a terraform_data helper whose `output` is UNKNOWN at
-#     plan time, so whatever id Morpheus returns still satisfies the consistency
-#     check. triggers_replace = [timestamp()] recreates the helper on every
-#     apply, keeping output unknown even on re-applies (so a tainted admin can
-#     always be recreated cleanly), and ignore_changes = [role_ids] stops later
-#     plans from "correcting" the stored tenant-local id. Trade-off: the two
-#     helper resources always show as "will be replaced" in the plan. (If you
-#     prefer no perpetual diff, drop triggers_replace -- but then a failed admin
-#     create must be cleared with `terraform state rm` before re-applying.)
+#  1. Bootstrap admin (one per tenant): the FIRST user of a sub-tenant can't use
+#     the workaround below (the sub-tenant provider that resolves local role ids
+#     has to authenticate AS this admin -- chicken-and-egg). Instead it is
+#     created straight through the Morpheus API by a local-exec provisioner,
+#     which is not subject to Terraform's consistency check. See
+#     bootstrap_admin.sh. Requires `curl` and `jq` on the machine running
+#     Terraform.
 #
-#  2. Standard users: assigned the tenant-LOCAL role id resolved by a
-#     hpe_morpheus_role data source scoped to the sub-tenant (authenticated as
-#     the bootstrap admin), so planned == actual and no workaround is needed.
+#  2. Standard users: created by the master provider, but assigned the
+#     tenant-LOCAL role id resolved by a hpe_morpheus_role data source scoped to
+#     the sub-tenant (authenticated as the bootstrap admin), so planned ==
+#     actual and no workaround is needed.
 ###############################################################################
 
 # --- Bootstrap admin, one per tenant --------------------------------------
-
-# Launders the (known) admin role id into an UNKNOWN-at-plan value: `output` is
-# computed and only set at apply, and triggers_replace = [timestamp()] recreates
-# this every apply so output is unknown on every plan -- including re-applies,
-# which is what makes admin creation robust against the role_ids swap.
-resource "terraform_data" "admin_role_ref" {
+# Creates each tenant's bootstrap admin via the Morpheus API. The provisioner
+# runs once when the resource is created and re-runs only if the tenant, admin
+# username, or admin role changes (triggers_replace). The script is idempotent,
+# so re-runs (or an admin left behind by an earlier failed apply) are no-ops.
+#
+# NOTE: this is create-only -- there is no destroy-time cleanup. On
+# `terraform destroy` the users are removed automatically when their tenant
+# (hpe_morpheus_tenant.this) is deleted.
+resource "terraform_data" "admin" {
   for_each = local.tenants
 
-  input            = hpe_morpheus_role.tenant_admin[each.key].id
-  triggers_replace = [timestamp()]
-}
+  triggers_replace = {
+    tenant_id = hpe_morpheus_tenant.this[each.key].id
+    username  = local.admin_creds[each.key].username
+    role_id   = hpe_morpheus_role.tenant_admin[each.key].id
+  }
 
-# Created by the master provider (tenant_id targets the sub-tenant). The
-# sub-tenant providers in providers.tf then authenticate as this user.
-resource "hpe_morpheus_user" "admin" {
-  for_each = local.tenants
-
-  tenant_id           = hpe_morpheus_tenant.this[each.key].id
-  username            = local.admin_creds[each.key].username
-  email               = "${local.admin_creds[each.key].username}@example.com"
-  password_wo         = local.admin_creds[each.key].password
-  password_wo_version = 1
-  first_name          = each.value.name
-  last_name           = "Admin"
-  role_ids            = [terraform_data.admin_role_ref[each.key].output]
-
-  lifecycle {
-    # Morpheus returns the tenant-local copy of the role id, not the master id
-    # we sent; ignore it so subsequent plans don't try to "correct" it and
-    # re-trigger the consistency error.
-    ignore_changes = [role_ids]
+  provisioner "local-exec" {
+    command = "bash \"${path.module}/bootstrap_admin.sh\""
+    environment = {
+      MORPH_URL      = var.morpheus_url
+      MORPH_USER     = var.morpheus_username
+      MORPH_PASS     = var.morpheus_password
+      MORPH_INSECURE = tostring(var.morpheus_insecure)
+      TENANT_ID      = tostring(hpe_morpheus_tenant.this[each.key].id)
+      ADMIN_USER     = local.admin_creds[each.key].username
+      ADMIN_EMAIL    = "${local.admin_creds[each.key].username}@example.com"
+      ADMIN_PASS     = local.admin_creds[each.key].password
+      ROLE_ID        = tostring(hpe_morpheus_role.tenant_admin[each.key].id)
+    }
   }
 }
 
@@ -71,7 +70,7 @@ data "hpe_morpheus_role" "coke_user_role" {
   name     = hpe_morpheus_role.tenant_user["coke"].name
 
   depends_on = [
-    hpe_morpheus_user.admin,
+    terraform_data.admin,
     hpe_morpheus_role.tenant_user,
     hpe_morpheus_tenant.this,
   ]
@@ -82,7 +81,7 @@ data "hpe_morpheus_role" "pepsi_user_role" {
   name     = hpe_morpheus_role.tenant_user["pepsi"].name
 
   depends_on = [
-    hpe_morpheus_user.admin,
+    terraform_data.admin,
     hpe_morpheus_role.tenant_user,
     hpe_morpheus_tenant.this,
   ]
