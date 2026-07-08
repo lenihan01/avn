@@ -42,3 +42,11 @@ output "tenant_cloud_ids" {
   description = "Map of tenant key => VMware cloud id."
   value       = { for k, c in hpe_morpheus_cloud.vmware : k => c.id }
 }
+
+output "tenant_expiration_policy_ids" {
+  description = "Map of tenant key => fixed-expiration lifecycle policy id (scoped to each tenant's group)."
+  value = {
+    coke  = hpe_morpheus_policy.coke_expiration.id
+    pepsi = hpe_morpheus_policy.pepsi_expiration.id
+  }
+}

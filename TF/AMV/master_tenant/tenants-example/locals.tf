@@ -86,6 +86,14 @@ locals {
     }
   }
 
+  # Per-tenant instance expiration. Each tenant's group (clouds.tf) gets a
+  # fixed-expiration lifecycle policy (policies.tf) that expires instances
+  # provisioned into the group after this many days.
+  tenant_expiration_days = {
+    coke  = 3
+    pepsi = 4
+  }
+
   # Tenant-local group ids, keyed by tenant. The groups are created inside each
   # sub-tenant (clouds.tf) via that tenant's provider; the per-tenant cloud is
   # then assigned to its group. Declared here so clouds.tf can look the id up by
