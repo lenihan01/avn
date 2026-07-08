@@ -30,9 +30,16 @@ resource "hpe_morpheus_policy" "coke_expiration" {
   }
 
   # Fixed expiration: instances expire lifecycleAge days after provisioning.
+  # Extensions and auto-renew are disabled so the expiration is a hard deadline.
+  # Disabling extensions also avoids Morpheus rejecting the policy with "Approval
+  # Integration must be selected" -- it requires an approval integration whenever
+  # user-requested extensions are enabled.
   config = {
-    lifecycleType = "fixed"
-    lifecycleAge  = tostring(local.tenant_expiration_days["coke"])
+    lifecycleType                     = "fixed"
+    lifecycleAge                      = tostring(local.tenant_expiration_days["coke"])
+    lifecycleAutoRenew                = "off"
+    lifecycleAllowExtend              = "off"
+    lifecycleExtensionsBeforeApproval = "0"
   }
 }
 
@@ -50,8 +57,15 @@ resource "hpe_morpheus_policy" "pepsi_expiration" {
   }
 
   # Fixed expiration: instances expire lifecycleAge days after provisioning.
+  # Extensions and auto-renew are disabled so the expiration is a hard deadline.
+  # Disabling extensions also avoids Morpheus rejecting the policy with "Approval
+  # Integration must be selected" -- it requires an approval integration whenever
+  # user-requested extensions are enabled.
   config = {
-    lifecycleType = "fixed"
-    lifecycleAge  = tostring(local.tenant_expiration_days["pepsi"])
+    lifecycleType                     = "fixed"
+    lifecycleAge                      = tostring(local.tenant_expiration_days["pepsi"])
+    lifecycleAutoRenew                = "off"
+    lifecycleAllowExtend              = "off"
+    lifecycleExtensionsBeforeApproval = "0"
   }
 }
