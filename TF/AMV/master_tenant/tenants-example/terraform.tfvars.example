@@ -33,3 +33,10 @@ pepsi_cloud_datacenter = "Datacenter"
 pepsi_cloud_cluster    = "Cluster"
 pepsi_cloud_username   = "administrator@vsphere.local"
 pepsi_cloud_password   = "change-me"
+
+# Git repository for the Coke tenant's Ansible integration (integrations.tf).
+# The public Morpheus sample repo below needs no credentials; point this at your
+# own repo (and add auth on hpe_morpheus_integration_ansible.coke) for a private
+# one. coke_ansible_branch is optional and defaults to "master".
+coke_ansible_url = "https://github.com/gomorpheus/morpheus-ansible.git"
+# coke_ansible_branch = "master"

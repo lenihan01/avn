@@ -123,12 +123,11 @@ variable "pepsi_cloud_password" {
 
 # --- Ansible integration (Coke tenant) ---------------------------------------
 # integrations.tf creates one Ansible (git) integration inside the Coke
-# sub-tenant. Defaults to the public Morpheus sample repository (no credentials);
-# override coke_ansible_url (and add auth on the resource) for a private repo.
+# sub-tenant. Set coke_ansible_url to the git repository to attach (see
+# terraform.tfvars.example); for a private repo also add auth on the resource.
 variable "coke_ansible_url" {
   type        = string
   description = "Git repository URL for the Coke tenant's Ansible integration."
-  default     = "https://github.com/gomorpheus/morpheus-ansible.git"
 }
 
 variable "coke_ansible_branch" {
