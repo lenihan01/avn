@@ -82,9 +82,17 @@ resource "hpe_morpheus_instance_type_layout" "coke_ubuntu_2004_layout" {
   name             = "Coke Ubuntu 20.04 Layout"
   version          = "20.04"
   technology       = "vmware"
+  creatable        = true
   labels           = ["coke", "terraform"]
 
   node_type_ids = [var.coke_ubuntu_2004_node_type_id]
+
+  # Associate the Coke provisioning workflow (workflows.tf) with this layout, so
+  # instances created from it run that workflow at provision. The layout already
+  # sits after the workflow in the serialization chain (via the instance type),
+  # so this reference adds no new ordering. (id is a string; Terraform converts it
+  # to the number workflow_id expects, as with task_id/ansible_repo_id elsewhere.)
+  workflow_id = hpe_morpheus_workflow_provisioning.coke.id
 
   # New tail of the Coke automation serialization chain: the instance_type_id
   # reference already defers this until the instance type exists; the explicit
