@@ -55,3 +55,8 @@ output "coke_ansible_integration_id" {
   description = "Id of the Coke tenant's Ansible integration (created inside the Coke sub-tenant)."
   value       = hpe_morpheus_integration_ansible.coke.id
 }
+
+output "coke_shell_task_id" {
+  description = "Id of the Coke tenant's shell-script task (runs hostname; created inside the Coke sub-tenant)."
+  value       = hpe_morpheus_task_shell_script.coke.id
+}

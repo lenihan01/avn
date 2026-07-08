@@ -59,6 +59,14 @@ locals {
     #     it: without it the tenant admin cannot edit the integration.
     "admin-cm",
     "integrations-ansible",
+
+    # Automation features.
+    #   tasks ("Tasks") gates the task create/update/delete API the provider
+    #     uses (POST/PUT/DELETE /api/tasks) -- verified in the Morpheus
+    #     TasksController, whose class requires tasks at "read"/"full" and whose
+    #     save/update/delete actions each require tasks at "full" access. The
+    #     Coke sub-tenant admin needs it to create the shell task (tasks.tf).
+    "tasks",
   ]
 
   # Bootstrap admin credentials per tenant. These users are created via the
