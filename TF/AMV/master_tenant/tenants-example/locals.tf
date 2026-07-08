@@ -66,7 +66,14 @@ locals {
     #     TasksController, whose class requires tasks at "read"/"full" and whose
     #     save/update/delete actions each require tasks at "full" access. The
     #     Coke sub-tenant admin needs it to create the shell task (tasks.tf).
+    #   workflows ("Workflows") gates the workflow (task set) create/update/
+    #     delete API (POST/PUT/DELETE /api/task-sets) -- verified in the Morpheus
+    #     TaskSetsController, whose class requires workflows at "read"/"full" and
+    #     whose save/update/delete actions each require workflows at "full". The
+    #     Coke sub-tenant admin needs it to create the provisioning workflow
+    #     (workflows.tf).
     "tasks",
+    "workflows",
   ]
 
   # Bootstrap admin credentials per tenant. These users are created via the

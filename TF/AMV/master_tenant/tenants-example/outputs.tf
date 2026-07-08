@@ -70,3 +70,8 @@ output "coke_ansible_task_id" {
   description = "Id of the Coke tenant's Ansible playbook task (scoped to the Coke Ansible integration)."
   value       = hpe_morpheus_task_ansible_playbook.coke.id
 }
+
+output "coke_provisioning_workflow_id" {
+  description = "Id of the Coke tenant's provisioning workflow (runs the Coke Ansible playbook at the provision phase)."
+  value       = hpe_morpheus_workflow_provisioning.coke.id
+}
