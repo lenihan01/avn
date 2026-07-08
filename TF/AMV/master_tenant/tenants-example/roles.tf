@@ -85,6 +85,15 @@ resource "hpe_morpheus_role" "tenant_user" {
     default_task_access              = "full"
     default_vdi_pool_access          = "none"
     default_workflow_access          = "full"
+
+    # admin-health is granted to every role by request. It is also in the
+    # base-role ceiling (local.tenant_ceiling_features), so this grant survives
+    # into the multitenant role's sub-tenant copy. (tenant_base and tenant_admin
+    # receive it via that ceiling list; this user role has no other feature
+    # permissions, so it is listed explicitly here.)
+    feature_permissions = [
+      { code = "admin-health", access = "full" }
+    ]
   }
 }
 

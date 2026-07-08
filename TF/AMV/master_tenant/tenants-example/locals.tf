@@ -24,8 +24,9 @@ locals {
   #
   # Scoped to tenant-relevant Administration and integration features;
   # appliance/master-only codes (admin-appliance, admin-licenses, admin-plugins,
-  # admin-clients, admin-packages, admin-health, admin-whitelabel) are
-  # intentionally omitted.
+  # admin-clients, admin-packages, admin-whitelabel) are intentionally omitted.
+  # admin-health is the exception: although appliance-scoped, it is included
+  # (and granted to every role in roles.tf) by request.
   tenant_ceiling_features = [
     "admin-roles",
     "admin-users",
@@ -47,6 +48,12 @@ locals {
     "admin-guidanceSettings",
     "admin-logSettings",
     "admin-identity-sources",
+
+    # admin-health ("Health") -- appliance/tenant health and logs. Appliance-
+    # scoped, but included here (and granted to every role in roles.tf) by
+    # request. Adding this new code raises the ceiling and is NOT retroactive, so
+    # already-deployed tenants must be recreated to pick it up.
+    "admin-health",
 
     # Integration features.
     #   admin-cm ("Integrations") is what actually gates the create/update API
