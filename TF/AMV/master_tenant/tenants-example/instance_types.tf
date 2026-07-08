@@ -64,28 +64,16 @@ resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
 # concurrently, avoiding the concurrent-create 500 ("threw a gasket") Morpheus
 # returns under simultaneous same-tenant creates.
 #
-# node_type_ids references the "Ubuntu 20.04" library node type, resolved by name
-# through the Coke provider (the layout must reference a node type visible to the
-# tenant). Creating the layout needs the "admin-containers" ("Library") feature
-# permission, which is already in the ceiling (locals.tf) -- no extra permission
-# is required.
+# node_type_ids references the VMware "Ubuntu 20.04" library node type by id, via
+# var.coke_ubuntu_2004_node_type_id. It cannot be resolved by name: Morpheus
+# ships one "Ubuntu 20.04" node type per technology (~17 of them), and the
+# hpe_morpheus_node_type data source errors when a name matches more than one
+# ("found 17 node types named Ubuntu 20.04") -- it only filters by name or id, not
+# technology. So the specific VMware node type's id is supplied as a variable (see
+# variables.tf for how to look it up). Creating the layout needs the
+# "admin-containers" ("Library") feature permission, which is already in the
+# ceiling (locals.tf) -- no extra permission is required.
 ###############################################################################
-
-data "hpe_morpheus_node_type" "ubuntu_2004" {
-  provider = hpe.coke
-
-  name = "Ubuntu 20.04"
-
-  # Read through the Coke sub-tenant provider (authenticated as the bootstrap
-  # admin), so -- like the sub-tenant role lookups in users.tf -- defer the read
-  # until the admin exists (for auth) and the tenant has been created. Without
-  # this the data source is read at plan time, before the Coke admin exists, and
-  # the hpe.coke provider cannot authenticate on the first apply.
-  depends_on = [
-    terraform_data.admin,
-    hpe_morpheus_tenant.this,
-  ]
-}
 
 resource "hpe_morpheus_instance_type_layout" "coke_ubuntu_2004_layout" {
   provider = hpe.coke
@@ -96,7 +84,7 @@ resource "hpe_morpheus_instance_type_layout" "coke_ubuntu_2004_layout" {
   technology       = "vmware"
   labels           = ["coke", "terraform"]
 
-  node_type_ids = [data.hpe_morpheus_node_type.ubuntu_2004.id]
+  node_type_ids = [var.coke_ubuntu_2004_node_type_id]
 
   # New tail of the Coke automation serialization chain: the instance_type_id
   # reference already defers this until the instance type exists; the explicit

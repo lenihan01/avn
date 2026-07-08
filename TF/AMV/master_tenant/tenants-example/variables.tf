@@ -135,3 +135,22 @@ variable "coke_ansible_branch" {
   description = "Default branch of the Coke tenant's Ansible repository."
   default     = "master"
 }
+
+# --- Instance type layout (Coke tenant) --------------------------------------
+# instance_types.tf adds a VMware layout ("Coke Ubuntu 20.04 Layout") to the Coke
+# "coke ubuntu wordpress" instance type, bound to the VMware "Ubuntu 20.04" node
+# type. Morpheus ships one "Ubuntu 20.04" node type per technology, so it must be
+# selected by id (the by-name lookup is ambiguous). Find the VMware one's id on
+# the appliance, e.g.:
+#
+#   TOKEN=$(curl -sk "https://<appliance>/oauth/token?grant_type=password&scope=write&client_id=morph-api" \
+#     -d "username=<admin>&password=<pw>" | jq -r .access_token)
+#   curl -sk "https://<appliance>/api/library/container-types?max=500&phrase=Ubuntu%2020.04" \
+#     -H "Authorization: Bearer $TOKEN" \
+#     | jq -r '.containerTypes[] | select(.name=="Ubuntu 20.04") | "\(.id)\t\(.provisionType.code)"'
+#
+# then use the id of the row whose provision type code is "vmware".
+variable "coke_ubuntu_2004_node_type_id" {
+  type        = number
+  description = "Id of the VMware 'Ubuntu 20.04' node type to bind to the Coke Ubuntu 20.04 layout (instance_types.tf). Resolve by id -- the name matches one node type per technology. See the comment above for how to find it."
+}
