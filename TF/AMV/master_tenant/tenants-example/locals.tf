@@ -49,12 +49,14 @@ locals {
     "admin-identity-sources",
 
     # Integration features.
-    #   admin-cm ("Integrations") is what actually gates the POST /api/integrations
-    #     create endpoint the provider uses -- verified in the Morpheus
-    #     IntegrationsController.save action, which requires admin-cm OR
-    #     infrastructure-network-integrations at "full" access.
-    #   integrations-ansible additionally lets the tenant admin USE the Ansible
-    #     integration during provisioning (the /integration/ansible controller).
+    #   admin-cm ("Integrations") is what actually gates the create/update API
+    #     the provider uses (POST/PUT /api/integrations) -- verified in the
+    #     Morpheus IntegrationsController.save/update actions, which require
+    #     admin-cm OR infrastructure-network-integrations at "full" access.
+    #   integrations-ansible does NOT authorize those API calls, but IS required
+    #     to view/edit the Ansible integration's own config after creation and to
+    #     use it during provisioning (the /integration/ansible controller). Keep
+    #     it: without it the tenant admin cannot edit the integration.
     "admin-cm",
     "integrations-ansible",
   ]
