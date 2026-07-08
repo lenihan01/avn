@@ -25,8 +25,12 @@ locals {
   # Scoped to tenant-relevant Administration and integration features;
   # appliance/master-only codes (admin-appliance, admin-licenses, admin-plugins,
   # admin-clients, admin-packages, admin-whitelabel) are intentionally omitted.
-  # admin-health is the exception: although appliance-scoped, it is included
-  # (and granted to every role in roles.tf) by request.
+  # Every code in this list is granted at "full" access.
+  #
+  # admin-health is the exception: it is appliance-scoped but still granted to
+  # every role by request -- and only at "read", because the Health feature does
+  # not support "full". It is therefore NOT in this ("full") list; it is added
+  # separately in tenant_ceiling_permissions below.
   tenant_ceiling_features = [
     "admin-roles",
     "admin-users",
@@ -48,12 +52,6 @@ locals {
     "admin-guidanceSettings",
     "admin-logSettings",
     "admin-identity-sources",
-
-    # admin-health ("Health") -- appliance/tenant health and logs. Appliance-
-    # scoped, but included here (and granted to every role in roles.tf) by
-    # request. Adding this new code raises the ceiling and is NOT retroactive, so
-    # already-deployed tenants must be recreated to pick it up.
-    "admin-health",
 
     # Integration features.
     #   admin-cm ("Integrations") is what actually gates the create/update API
@@ -95,6 +93,16 @@ locals {
     #     error rather than a 403.
     "admin-containers",
   ]
+
+  # Materialized feature-permission ceiling used by the base role (the ceiling
+  # itself) and the tenant_admin role (roles.tf): every tenant_ceiling_features
+  # code at "full", plus admin-health at "read" (the Health feature only supports
+  # read/none, not full). Adding admin-health here raises the ceiling and is NOT
+  # retroactive, so already-deployed tenants must be recreated to pick it up.
+  tenant_ceiling_permissions = concat(
+    [for code in local.tenant_ceiling_features : { code = code, access = "full" }],
+    [{ code = "admin-health", access = "read" }],
+  )
 
   # Bootstrap admin credentials per tenant. These users are created via the
   # Morpheus API in users.tf (local-exec); the sub-tenant providers

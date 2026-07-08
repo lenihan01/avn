@@ -45,12 +45,10 @@ resource "hpe_morpheus_role" "tenant_base" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Deliberately broad ceiling -- see local.tenant_ceiling_features and the
+    # Deliberately broad ceiling -- see local.tenant_ceiling_permissions and the
     # header comment. Granting any of these to a tenant role later propagates to
     # the sub-tenant copy without recreating the tenant.
-    feature_permissions = [
-      for code in local.tenant_ceiling_features : { code = code, access = "full" }
-    ]
+    feature_permissions = local.tenant_ceiling_permissions
   }
 }
 
@@ -86,13 +84,14 @@ resource "hpe_morpheus_role" "tenant_user" {
     default_vdi_pool_access          = "none"
     default_workflow_access          = "full"
 
-    # admin-health is granted to every role by request. It is also in the
-    # base-role ceiling (local.tenant_ceiling_features), so this grant survives
-    # into the multitenant role's sub-tenant copy. (tenant_base and tenant_admin
-    # receive it via that ceiling list; this user role has no other feature
-    # permissions, so it is listed explicitly here.)
+    # admin-health is granted to every role by request, at "read" (the Health
+    # feature does not support "full"). It is also in the base-role ceiling
+    # (local.tenant_ceiling_permissions), so this grant survives into the
+    # multitenant role's sub-tenant copy. (tenant_base and tenant_admin receive
+    # it via that ceiling list; this user role has no other feature permissions,
+    # so it is listed explicitly here.)
     feature_permissions = [
-      { code = "admin-health", access = "full" }
+      { code = "admin-health", access = "read" }
     ]
   }
 }
@@ -120,14 +119,12 @@ resource "hpe_morpheus_role" "tenant_admin" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Grant the tenant admin the full ceiling (local.tenant_ceiling_features), so
-    # it is a complete administrator over the tenant's Administration features --
-    # reading roles for the sub-tenant data sources (users.tf), creating the
+    # Grant the tenant admin the full ceiling (local.tenant_ceiling_permissions),
+    # so it is a complete administrator over the tenant's Administration features
+    # -- reading roles for the sub-tenant data sources (users.tf), creating the
     # infrastructure group (clouds.tf), and managing clouds, servers, policies,
     # etc. Because this matches the base-role ceiling, every code survives into
     # the tenant-local copy.
-    feature_permissions = [
-      for code in local.tenant_ceiling_features : { code = code, access = "full" }
-    ]
+    feature_permissions = local.tenant_ceiling_permissions
   }
 }
