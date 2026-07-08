@@ -67,3 +67,33 @@ resource "hpe_morpheus_task_shell_script" "pepsi" {
     hpe_morpheus_role.tenant_admin,
   ]
 }
+
+###############################################################################
+# Coke Ansible playbook task
+#
+# Runs an Ansible playbook from the Coke tenant's own Ansible integration
+# (integrations.tf). ansible_repo_id references that integration, so the task
+# is scoped to the "Coke Ansible" repo (and the reference also defers creation
+# until the integration exists). execute_target = "resource" runs the playbook
+# against the provisioned resource/instance. Like the shell task it is created
+# via the Coke sub-tenant provider and needs the "tasks" permission, which is
+# already in the ceiling (locals.tf) -- no additional permission is required.
+###############################################################################
+
+resource "hpe_morpheus_task_ansible_playbook" "coke" {
+  provider = hpe.coke
+
+  name            = "${local.tenants["coke"].name} Ansible Playbook"
+  code            = "coke_ansible_playbook"
+  labels          = ["coke", "terraform"]
+  ansible_repo_id = hpe_morpheus_integration_ansible.coke.id
+  playbook        = "wordpress_ub.yml"
+  execute_target  = "resource"
+  retryable       = false
+
+  depends_on = [
+    terraform_data.admin,
+    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.tenant_admin,
+  ]
+}

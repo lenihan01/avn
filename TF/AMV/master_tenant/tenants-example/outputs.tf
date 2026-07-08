@@ -65,3 +65,8 @@ output "pepsi_shell_task_id" {
   description = "Id of the Pepsi tenant's shell-script task (runs hostname; created inside the Pepsi sub-tenant)."
   value       = hpe_morpheus_task_shell_script.pepsi.id
 }
+
+output "coke_ansible_task_id" {
+  description = "Id of the Coke tenant's Ansible playbook task (scoped to the Coke Ansible integration)."
+  value       = hpe_morpheus_task_ansible_playbook.coke.id
+}
