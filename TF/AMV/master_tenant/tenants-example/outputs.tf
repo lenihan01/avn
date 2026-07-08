@@ -32,3 +32,13 @@ output "pepsi_user_ids" {
   description = "Ids of the generated Pepsi tenant users (pepsi_user[*])."
   value       = hpe_morpheus_user.pepsi_user[*].id
 }
+
+output "tenant_group_ids" {
+  description = "Map of tenant key => infrastructure group id (created inside each sub-tenant)."
+  value       = local.tenant_group_ids
+}
+
+output "tenant_cloud_ids" {
+  description = "Map of tenant key => VMware cloud id."
+  value       = { for k, c in hpe_morpheus_cloud.vmware : k => c.id }
+}

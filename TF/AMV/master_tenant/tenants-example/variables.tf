@@ -59,3 +59,64 @@ variable "pepsi_user_count" {
   description = "Number of standard users to create in the Pepsi tenant (pepsi_user[0..n-1])."
   default     = 5
 }
+
+# --- VMware (vCenter) cloud settings -----------------------------------------
+# One infrastructure group and one VMware cloud are created per tenant
+# (clouds.tf). These mirror the per-tenant cloud variables in the parent module
+# (coke_clouds.tf/pepsi_clouds.tf).
+
+# Coke VMware cloud
+variable "coke_cloud_url" {
+  type        = string
+  description = "vCenter API URL for the Coke VMware cloud, e.g. https://vcenter.example.local"
+}
+
+variable "coke_cloud_datacenter" {
+  type        = string
+  description = "vCenter datacenter for the Coke VMware cloud."
+}
+
+variable "coke_cloud_cluster" {
+  type        = string
+  description = "vCenter cluster for the Coke VMware cloud."
+}
+
+variable "coke_cloud_username" {
+  type        = string
+  description = "vCenter username for the Coke VMware cloud."
+  default     = "administrator@vsphere.local"
+}
+
+variable "coke_cloud_password" {
+  type        = string
+  description = "vCenter password for the Coke VMware cloud."
+  sensitive   = true
+}
+
+# Pepsi VMware cloud
+variable "pepsi_cloud_url" {
+  type        = string
+  description = "vCenter API URL for the Pepsi VMware cloud, e.g. https://vcenter.example.local"
+}
+
+variable "pepsi_cloud_datacenter" {
+  type        = string
+  description = "vCenter datacenter for the Pepsi VMware cloud."
+}
+
+variable "pepsi_cloud_cluster" {
+  type        = string
+  description = "vCenter cluster for the Pepsi VMware cloud."
+}
+
+variable "pepsi_cloud_username" {
+  type        = string
+  description = "vCenter username for the Pepsi VMware cloud."
+  default     = "administrator@vsphere.local"
+}
+
+variable "pepsi_cloud_password" {
+  type        = string
+  description = "vCenter password for the Pepsi VMware cloud."
+  sensitive   = true
+}

@@ -19,3 +19,17 @@ user_password = "change-me"
 # Number of standard users per tenant: coke_user[0-2], pepsi_user[0-4].
 coke_user_count  = 3
 pepsi_user_count = 5
+
+# Per-tenant VMware (vCenter) cloud connection details. Each tenant gets its own
+# infrastructure group and a VMware cloud assigned to it (clouds.tf).
+coke_cloud_url        = "https://vcenter.example.local"
+coke_cloud_datacenter = "Datacenter"
+coke_cloud_cluster    = "Cluster"
+coke_cloud_username   = "administrator@vsphere.local"
+coke_cloud_password   = "change-me"
+
+pepsi_cloud_url        = "https://vcenter.example.local"
+pepsi_cloud_datacenter = "Datacenter"
+pepsi_cloud_cluster    = "Cluster"
+pepsi_cloud_username   = "administrator@vsphere.local"
+pepsi_cloud_password   = "change-me"

@@ -10,6 +10,8 @@
 # from its tenant-local copy, so the tenant admin gets HTTP 403 when the
 # hpe_morpheus_role data sources try to list roles. We therefore grant
 # admin-roles here so that permission survives into the copied tenant_admin role.
+# We likewise grant admin-groups so each tenant's bootstrap admin can create the
+# per-tenant infrastructure group backing its VMware cloud (clouds.tf).
 resource "hpe_morpheus_role" "tenant_base" {
   for_each = local.tenants
 
@@ -31,11 +33,12 @@ resource "hpe_morpheus_role" "tenant_base" {
     default_workflow_access          = "full"
 
     # Raise the tenant's feature-permission ceiling so admin capabilities granted
-    # to tenant roles (e.g. tenant_admin's admin-roles) are not masked out of
-    # their tenant-local copies.
+    # to tenant roles (e.g. tenant_admin's admin-roles/admin-groups) are not
+    # masked out of their tenant-local copies.
     feature_permissions = [
       { code = "admin-roles", access = "full" },
       { code = "admin-users", access = "full" },
+      { code = "admin-groups", access = "full" },
     ]
   }
 }
@@ -97,7 +100,11 @@ resource "hpe_morpheus_role" "tenant_admin" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Lets the admin read roles for the sub-tenant role data sources (users.tf).
-    feature_permissions = [{ code = "admin-roles", access = "full" }]
+    # Lets the admin read roles for the sub-tenant role data sources (users.tf)
+    # and create the per-tenant infrastructure group in clouds.tf.
+    feature_permissions = [
+      { code = "admin-roles", access = "full" },
+      { code = "admin-groups", access = "full" },
+    ]
   }
 }
