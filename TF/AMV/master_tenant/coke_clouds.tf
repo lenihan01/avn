@@ -1,9 +1,9 @@
 resource "hpe_morpheus_cloud" "coke_vmware_1" {
   name      = "Coke VMWare Cloud 1"
-  tenant_id = hpe_morpheus_tenant.coke-master-tenant.id 
+  tenant_id = hpe_morpheus_tenant.coke-master-tenant.id
   group_id  = 1
 
-  provider  = hpe.master-tenant
+  provider         = hpe.master-tenant
   code             = "cokevmwarecloud1"
   external_id      = "cokevmwarecloud1"
   labels           = ["aLabel1", "aLabel2"]
@@ -13,7 +13,7 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
   visibility       = "private"
 
   agent_install_mode       = "ssh"
-  appliance_url            = var.master_tenant_url 
+  appliance_url            = var.master_tenant_url
   auto_recover_power_state = true
   import_existing_vms      = "off"
 
@@ -24,27 +24,27 @@ resource "hpe_morpheus_cloud" "coke_vmware_1" {
 
   keyboard_layout = "us"
 
-#  config_vmware = {
-#    api_url                       = "https://vcenter9.cs8.local"
-#    api_version                   = "7.0"
-#    datacenter                    = "DC9"
-#    cluster                       = "CL9"
-#    username                      = "administrator@vsphere.local"
-#    password                      = "<redacted>"
-#    certificate_provider          = "internal"
-#    enable_network_type_selection = false
-#  }
+  #  config_vmware = {
+  #    api_url                       = "https://vcenter9.cs8.local"
+  #    api_version                   = "7.0"
+  #    datacenter                    = "DC9"
+  #    cluster                       = "CL9"
+  #    username                      = "administrator@vsphere.local"
+  #    password                      = "<redacted>"
+  #    certificate_provider          = "internal"
+  #    enable_network_type_selection = false
+  #  }
 
   cloud_type_code = "vmware"
   config = {
-    apiUrl                       = var.coke_cloud_1_url 
-    apiVersion                   = "7.0"
-    datacenter                    = var.coke_cloud_1_dc 
-    cluster                       = var.coke_cloud_1_cluster 
-    username                      = "administrator@vsphere.local"
-    password                      = var.coke_cloud_password 
-    certificateProvider          = "internal"
-    enable_hypervisor_console     = true
-#    enable_network_type_selection = false
+    apiUrl                    = var.coke_cloud_1_url
+    apiVersion                = "7.0"
+    datacenter                = var.coke_cloud_1_dc
+    cluster                   = var.coke_cloud_1_cluster
+    username                  = "administrator@vsphere.local"
+    password                  = var.coke_cloud_password
+    certificateProvider       = "internal"
+    enable_hypervisor_console = true
+    #    enable_network_type_selection = false
   }
 }

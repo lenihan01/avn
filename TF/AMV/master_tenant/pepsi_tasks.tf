@@ -12,7 +12,7 @@ EOF
   retry_count         = 1
   retry_delay_seconds = 10
   allow_custom_config = true
-#  visibility          = "public"
+  #  visibility          = "public"
   provider = hpe.pepsi-master-tenant
   depends_on = [
     hpe_morpheus_tenant.pepsi-master-tenant

@@ -16,7 +16,7 @@ resource "hpe_morpheus_policy" "coke_expiration" {
     lifecycleType = "fixed" # Options: "user" (user configurable), "fixed" (fixed expiration)
 
     # Optional
-    lifecycleAge                      = "3"                        # Days until expiration
+    lifecycleAge                      = "3"                         # Days until expiration
     lifecycleRenewal                  = "7"                         # Days for renewal window
     lifecycleNotify                   = "1"                         # Days before expiration to notify
     lifecycleMessage                  = "Instance will expire soon" # Notification message

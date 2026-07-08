@@ -11,7 +11,7 @@ resource "hpe_morpheus_integration_ansible" "coke_ansible_integration_1" {
   enable_ansible_galaxy_install = true
   enable_verbose_logging        = true
   enable_agent_command_bus      = true
-  enable_git_caching            = false 
+  enable_git_caching            = false
   provider                      = hpe.coke-master-tenant
   depends_on = [
     hpe_morpheus_tenant.coke-master-tenant

@@ -1,3 +1,12 @@
+data "hpe_morpheus_role" "coke_user_role_tenant" {
+  provider = hpe.coke-master-tenant
+  name     = "Coke User Role"
+  depends_on = [
+    hpe_morpheus_role.coke_user_role,
+    hpe_morpheus_user.coke_admin,
+  ]
+}
+
 resource "hpe_morpheus_user" "coke_admin" {
   tenant_id                   = hpe_morpheus_tenant.coke-master-tenant.id
   username                    = var.coke_admin_username
@@ -16,6 +25,10 @@ resource "hpe_morpheus_user" "coke_admin" {
   windows_password_wo         = var.coke_admin_password
   windows_password_wo_version = 1
   provider                    = hpe.master-tenant
+
+  lifecycle {
+    ignore_changes = [role_ids]
+  }
 }
 
 resource "hpe_morpheus_user" "coke" {
@@ -25,7 +38,7 @@ resource "hpe_morpheus_user" "coke" {
   email                       = "coke${count.index}@testacc.com"
   password_wo                 = var.coke_password
   password_wo_version         = 1
-  role_ids                    = [hpe_morpheus_role.coke_user_role.id]
+  role_ids                    = [data.hpe_morpheus_role.coke_user_role_tenant.id]
   first_name                  = "Coke"
   last_name                   = "User${count.index}"
   linux_username              = "coke${count.index}"
