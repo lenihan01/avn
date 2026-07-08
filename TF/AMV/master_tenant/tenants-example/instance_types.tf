@@ -35,9 +35,15 @@ resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
   visibility  = "private"
   labels      = ["coke", "terraform"]
 
+  # Tail of the Coke automation chain (integration -> shell task -> ansible task
+  # -> workflow -> instance type): follows the workflow so the Coke tenant's
+  # resources are created one at a time and avoid the concurrent-create 500
+  # ("threw a gasket") Morpheus returns under several simultaneous same-tenant
+  # creates.
   depends_on = [
     terraform_data.admin,
     hpe_morpheus_role.tenant_base,
     hpe_morpheus_role.tenant_admin,
+    hpe_morpheus_workflow_provisioning.coke,
   ]
 }

@@ -41,10 +41,20 @@ resource "hpe_morpheus_task_shell_script" "coke" {
   sudo           = false
   retryable      = false
 
+  # Serialize the Coke tenant's automation/library resources so they are POSTed
+  # one at a time. Morpheus returns a 500 ("threw a gasket") when a tenant
+  # receives several concurrent creates -- the losing create is still committed
+  # server-side but reported to Terraform as an error (leaving it out of state).
+  # The Coke tenant creates enough resources at once to trigger this, so they are
+  # chained: integration -> shell task -> ansible task -> workflow -> instance
+  # type. (Pepsi has far fewer concurrent creates and does not need the chain.)
+  # depends_on also defers creation until the bootstrap admin exists (for auth)
+  # and the permission-carrying roles have been applied.
   depends_on = [
     terraform_data.admin,
     hpe_morpheus_role.tenant_base,
     hpe_morpheus_role.tenant_admin,
+    hpe_morpheus_integration_ansible.coke,
   ]
 }
 
@@ -91,9 +101,15 @@ resource "hpe_morpheus_task_ansible_playbook" "coke" {
   execute_target  = "resource"
   retryable       = false
 
+  # Next link in the Coke automation chain (integration -> shell task -> ansible
+  # task -> workflow -> instance type): follows the shell task so the Coke
+  # tenant's resources are created one at a time and avoid the concurrent-create
+  # 500 Morpheus returns under several simultaneous same-tenant creates. (The
+  # integration is already an implicit dependency via ansible_repo_id.)
   depends_on = [
     terraform_data.admin,
     hpe_morpheus_role.tenant_base,
     hpe_morpheus_role.tenant_admin,
+    hpe_morpheus_task_shell_script.coke,
   ]
 }
