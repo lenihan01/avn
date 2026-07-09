@@ -37,6 +37,18 @@ resource "hpe_morpheus_group" "pepsi" {
   depends_on = [terraform_data.admin]
 }
 
+# Group owned by the Coke-Finance sub-tenant. Created through the
+# hpe.coke_finance provider (which logs in as the Coke-Finance bootstrap admin),
+# so the group belongs to Coke-Finance. depends_on defers creation until that
+# admin exists (for auth). Hosts the MVM private cloud below.
+resource "hpe_morpheus_group" "coke_finance" {
+  provider = hpe.coke_finance
+  name     = "Coke HVM Group"
+  code     = "coke-hvm-group"
+
+  depends_on = [terraform_data.coke_subtenant_admin]
+}
+
 resource "hpe_morpheus_cloud" "vmware" {
   for_each = local.cloud_config
 
@@ -70,5 +82,38 @@ resource "hpe_morpheus_cloud" "vmware" {
     password                  = each.value.password
     certificateProvider       = "internal"
     enable_hypervisor_console = true
+  }
+}
+
+# MVM (Morpheus VM Manager / HPE VM) private cloud, owned by the Coke-Finance
+# sub-tenant and assigned to the "Coke HVM Group" above. Like the VMware clouds,
+# it is created by the master provider with tenant_id targeting the sub-tenant.
+resource "hpe_morpheus_cloud" "coke_finance_hvm" {
+  name      = "Coke Finance HVM Cloud 1"
+  tenant_id = hpe_morpheus_tenant.coke_subtenant["coke_finance"].id
+  group_id  = hpe_morpheus_group.coke_finance.id
+
+  code            = "cokefinancehvmcloud1"
+  enabled         = true
+  visibility      = "private"
+  cloud_type_code = "mvm"
+
+  agent_install_mode       = "ssh"
+  appliance_url            = var.morpheus_url
+  auto_recover_power_state = true
+  import_existing_vms      = "off"
+
+  costing_mode    = "costing"
+  guidance_mode   = "off"
+  security_mode   = "off"
+  keyboard_layout = "us"
+
+  # Minimal MVM config. Add your specific storage/network settings here, e.g.:
+  #   workingPath = "/var/lib/morpheus/kvm"
+  #   diskPath    = "/var/lib/libvirt/images"
+  #   networkServer / cidr / gateway, etc.
+  # KVM hypervisor hosts are added to the cloud after it exists.
+  config = {
+    applianceUrl = var.morpheus_url
   }
 }

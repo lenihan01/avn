@@ -45,3 +45,19 @@ provider "hpe" {
     insecure = var.morpheus_insecure
   }
 }
+
+# Coke-Finance sub-tenant provider. Coke-Finance is itself created through the
+# hpe.coke provider (tenants.tf); this alias authenticates as its bootstrap
+# admin (created in users.tf) so resources that belong to whichever tenant the
+# provider is logged in as -- e.g. hpe_morpheus_group (clouds.tf) -- can be
+# created inside Coke-Finance. Subdomain is "coke-finance" (see the single
+# backslash login note above).
+provider "hpe" {
+  alias = "coke_finance"
+  morpheus {
+    url      = var.morpheus_url
+    username = "coke-finance\\${var.coke_finance_admin_username}"
+    password = var.coke_finance_admin_password
+    insecure = var.morpheus_insecure
+  }
+}
