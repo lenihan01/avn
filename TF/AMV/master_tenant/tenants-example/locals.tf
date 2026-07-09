@@ -35,6 +35,12 @@ locals {
     "admin-roles",
     "admin-users",
     "admin-groups",
+
+    # Tenants ("tenant functionality"): manage sub-tenants. Extends the base
+    # role ceiling and the "Private Cloud Tenant Owner" (tenant_admin) role,
+    # both of which derive from tenant_role_permissions["coke"].
+    "admin-accounts",
+
     "admin-zones",
     "admin-servers",
     "admin-server-software",
