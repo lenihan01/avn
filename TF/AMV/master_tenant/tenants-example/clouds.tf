@@ -9,7 +9,8 @@
 # tenant its provider is authenticated as. So each group is created through that
 # tenant's sub-tenant provider (hpe.coke / hpe.pepsi), which logs in as the
 # bootstrap admin. That admin needs the "admin-groups" feature permission,
-# granted on the tenant_admin role AND raised in the tenant_base ceiling
+# granted on the tenant_admin role AND raised in the base role ceiling
+# (hpe_morpheus_role.base)
 # (roles.tf) so it survives into the tenant-local role copy. Provider aliases
 # can't be selected dynamically, so the groups are declared once per tenant
 # (like the role data sources in users.tf). depends_on defers creation until the

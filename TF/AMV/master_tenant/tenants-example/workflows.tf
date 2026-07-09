@@ -11,7 +11,8 @@
 # The bootstrap admin needs the "workflows" ("Workflows") feature permission to
 # create it: the provider POSTs to /api/task-sets, whose save action requires
 # workflows at "full" access -- verified in the Morpheus TaskSetsController. That
-# code is granted on the tenant_admin role AND raised in the tenant_base ceiling
+# code is granted on the tenant_admin role AND raised in the base role ceiling
+# (hpe_morpheus_role.base,
 # (both derive feature_permissions from local.tenant_ceiling_features in
 # roles.tf) so it survives into the tenant-local admin copy. NOTE: "workflows"
 # was newly ADDED to that ceiling, and raising the ceiling is NOT retroactive --
@@ -40,7 +41,7 @@ resource "hpe_morpheus_workflow_provisioning" "coke" {
 
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
   ]
 }

@@ -14,7 +14,7 @@
 # gates a DIFFERENT endpoint -- the ansible provisioning controller -- and is kept
 # in the ceiling so the admin can USE the integration, but it does NOT authorize
 # the create call.) Both codes are granted on the tenant_admin role AND raised in
-# the tenant_base ceiling (both derive feature_permissions from
+# the base role ceiling (hpe_morpheus_role.base, both derive feature_permissions from
 # local.tenant_ceiling_features in roles.tf) so they survive into the tenant-local
 # admin copy. NOTE: admin-cm was newly ADDED to that ceiling, and raising the
 # ceiling is NOT retroactive -- an already-deployed Coke tenant must be recreated
@@ -50,7 +50,7 @@ resource "hpe_morpheus_integration_ansible" "coke" {
 
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
   ]
 }

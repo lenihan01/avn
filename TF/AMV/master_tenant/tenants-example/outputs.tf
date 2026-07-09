@@ -3,9 +3,9 @@ output "tenant_ids" {
   value       = { for k, t in hpe_morpheus_tenant.this : k => t.id }
 }
 
-output "tenant_base_role_ids" {
-  description = "Map of tenant key => base (account) role id."
-  value       = { for k, r in hpe_morpheus_role.tenant_base : k => r.id }
+output "base_role_id" {
+  description = "The shared base account role id used by all tenants."
+  value       = hpe_morpheus_role.base.id
 }
 
 output "tenant_user_role_ids" {

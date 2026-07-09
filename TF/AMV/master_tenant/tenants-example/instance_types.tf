@@ -11,7 +11,7 @@
 # to create it: the provider POSTs to /api/library/instance-types, whose save
 # action requires admin-containers at "full" access -- verified in the Morpheus
 # LibraryInstanceTypesController. That code is granted on the tenant_admin role
-# AND raised in the tenant_base ceiling (both derive feature_permissions from
+# AND raised in the base role ceiling (hpe_morpheus_role.base, both derive feature_permissions from
 # local.tenant_ceiling_features in roles.tf) so it survives into the tenant-local
 # admin copy. NOTE: "admin-containers" was newly ADDED to that ceiling, and
 # raising the ceiling is NOT retroactive -- an already-deployed Coke tenant must
@@ -43,7 +43,7 @@ resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
   # creates.
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
     hpe_morpheus_workflow_provisioning.coke,
   ]
@@ -101,7 +101,7 @@ resource "hpe_morpheus_instance_type_layout" "coke_ubuntu_2004_layout" {
   # permission-carrying roles applied first).
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
   ]
 }

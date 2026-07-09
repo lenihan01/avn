@@ -1,6 +1,6 @@
-# Base "tenant" role -- one per tenant. Every hpe_morpheus_tenant requires a
-# base role (base_role_id); it defines the default account-level access granted
-# to the tenant.
+# Base "tenant" role -- a single shared role used by all tenants. Every
+# hpe_morpheus_tenant requires a base role (base_role_id); it defines the default
+# account-level access granted to the tenant.
 #
 # IMPORTANT: the base (account) role also acts as the PERMISSION CEILING for the
 # tenant. When a multitenant master role is copied into this tenant, the copy's
@@ -25,11 +25,9 @@
 # destroy/apply). Granting a permission that is ALREADY within the ceiling to a
 # tenant role propagates with no recreate. Keeping the ceiling wide up front
 # avoids future recreates.
-resource "hpe_morpheus_role" "tenant_base" {
-  for_each = local.tenants
-
-  name        = "${each.value.name} Tenant Base Role"
-  description = "Base account role for the ${each.value.name} tenant"
+resource "hpe_morpheus_role" "base" {
+  name        = "Base Role"
+  description = "Shared base account role for all tenants"
   role_type   = "tenant"
 
   # default_cloud_access is a tenant-scoped permission (default_group_access is
@@ -45,12 +43,12 @@ resource "hpe_morpheus_role" "tenant_base" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Per-tenant ceiling -- the shared broad ceiling (tenant_ceiling_permissions)
-    # plus any per-tenant extras (tenant_extra_feature_codes; e.g. Coke's
-    # provisioning-* features). See those locals and the header comment. Granting
-    # any of these to a tenant role later propagates to the sub-tenant copy
-    # without recreating the tenant.
-    feature_permissions = local.tenant_role_permissions[each.key]
+    # The shared permission ceiling (tenant_ceiling_permissions) plus Coke's
+    # provisioning-* extras (tenant_extra_feature_codes["coke"]). This role acts
+    # as the permission ceiling for all tenants. See locals.tf and the header
+    # comment. Granting any of these to a tenant role later propagates to the
+    # sub-tenant copy without recreating the tenant.
+    feature_permissions = local.tenant_role_permissions["coke"]
   }
 }
 
@@ -89,7 +87,7 @@ resource "hpe_morpheus_role" "tenant_user" {
     # admin-health is granted to every role by request, at "read" (the Health
     # feature does not support "full"). It is also in the base-role ceiling
     # (local.tenant_ceiling_permissions), so this grant survives into the
-    # multitenant role's sub-tenant copy. (tenant_base and tenant_admin receive
+    # multitenant role's sub-tenant copy. (hpe_morpheus_role.base and tenant_admin receive
     # it via that ceiling list; this user role has no other feature permissions,
     # so it is listed explicitly here.)
     feature_permissions = [

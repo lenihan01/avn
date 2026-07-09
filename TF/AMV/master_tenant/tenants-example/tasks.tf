@@ -11,7 +11,8 @@
 # The bootstrap admin needs the "tasks" ("Tasks") feature permission to create it:
 # the provider POSTs to /api/tasks, whose save action requires tasks at "full"
 # access -- verified in the Morpheus TasksController. That code is granted on the
-# tenant_admin role AND raised in the tenant_base ceiling (both derive
+# tenant_admin role AND raised in the base role ceiling (hpe_morpheus_role.base,
+# both derive
 # feature_permissions from local.tenant_ceiling_features in roles.tf) so it
 # survives into the tenant-local admin copy. NOTE: "tasks" was newly ADDED to that
 # ceiling, and raising the ceiling is NOT retroactive -- an already-deployed
@@ -52,7 +53,7 @@ resource "hpe_morpheus_task_shell_script" "coke" {
   # and the permission-carrying roles have been applied.
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
     hpe_morpheus_integration_ansible.coke,
   ]
@@ -73,7 +74,7 @@ resource "hpe_morpheus_task_shell_script" "pepsi" {
 
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
   ]
 }
@@ -108,7 +109,7 @@ resource "hpe_morpheus_task_ansible_playbook" "coke" {
   # integration is already an implicit dependency via ansible_repo_id.)
   depends_on = [
     terraform_data.admin,
-    hpe_morpheus_role.tenant_base,
+    hpe_morpheus_role.base,
     hpe_morpheus_role.tenant_admin,
     hpe_morpheus_task_shell_script.coke,
   ]
