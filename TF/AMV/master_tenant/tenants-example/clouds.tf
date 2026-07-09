@@ -85,9 +85,14 @@ resource "hpe_morpheus_cloud" "vmware" {
   }
 }
 
-# MVM (Morpheus VM Manager / HPE VM) private cloud, owned by the Coke-Finance
+# Private Cloud (cloud_type_code "standard"), owned by the Coke-Finance
 # sub-tenant and assigned to the "Coke HVM Group" above. Like the VMware clouds,
 # it is created by the master provider with tenant_id targeting the sub-tenant.
+#
+# NOTE: this appliance has no MVM / HPE-VM (KVM) cloud type installed -- its
+# /api/zone-types list offers no such code, and "standard" ("Private Cloud") is
+# the only generic private cloud available. If the MVM/HPE-VM tech pack is
+# enabled on the appliance later, switch cloud_type_code to that code.
 resource "hpe_morpheus_cloud" "coke_finance_hvm" {
   name      = "Coke Finance HVM Cloud 1"
   tenant_id = hpe_morpheus_tenant.coke_subtenant["coke_finance"].id
@@ -96,7 +101,7 @@ resource "hpe_morpheus_cloud" "coke_finance_hvm" {
   code            = "cokefinancehvmcloud1"
   enabled         = true
   visibility      = "private"
-  cloud_type_code = "mvm"
+  cloud_type_code = "standard"
 
   agent_install_mode       = "ssh"
   appliance_url            = var.morpheus_url
@@ -108,12 +113,10 @@ resource "hpe_morpheus_cloud" "coke_finance_hvm" {
   security_mode   = "off"
   keyboard_layout = "us"
 
-  # Minimal MVM config. Add your specific storage/network settings here, e.g.:
-  #   workingPath = "/var/lib/morpheus/kvm"
-  #   diskPath    = "/var/lib/libvirt/images"
-  #   networkServer / cidr / gateway, etc.
-  # KVM hypervisor hosts are added to the cloud after it exists.
+  # Standard "Private Cloud" config (matches the provider's documented example).
+  # Hosts are added to the cloud manually after it exists.
   config = {
-    applianceUrl = var.morpheus_url
+    certificateProvider        = "internal"
+    enableNetworkTypeSelection = false
   }
 }
