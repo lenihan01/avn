@@ -53,6 +53,12 @@ variable "coke_finance_admin_password" {
   sensitive   = true
 }
 
+variable "coke_finance_hvm_ssh_password" {
+  type        = string
+  description = "SSH password for the existing hosts added to the Coke HVM Cluster (clusters.tf). Applied via the write-only ssh_password_wo field."
+  sensitive   = true
+}
+
 variable "user_password" {
   type        = string
   description = "Password assigned to every generated tenant user (coke_user*/pepsi_user*). Use per-user secrets in production."

@@ -18,6 +18,9 @@ pepsi_admin_password = "change-me"
 coke_finance_admin_username = "coke-finance-admin"
 coke_finance_admin_password = "change-me"
 
+# SSH password for the existing hosts added to the Coke HVM Cluster (clusters.tf).
+coke_finance_hvm_ssh_password = "change-me"
+
 # Password applied to every generated tenant user (coke_user*/pepsi_user*).
 user_password = "change-me"
 
