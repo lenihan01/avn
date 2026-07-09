@@ -8,24 +8,23 @@
 # where its group and cloud live. depends_on defers creation until the
 # Coke-Finance bootstrap admin exists (for auth).
 #
-# The cluster layout and service plan are global library objects, resolved by
-# name via the master provider.
+# The service plan is a global Library object, resolved by name via the master
+# provider. The cluster layout id is supplied via a variable (see below).
 ###############################################################################
-
-# The cluster layout is resolved by name via the master provider. In provider
-# v1.5.0 the cluster-layout data source is named hpe_morpheus_cluster_type (it
-# was renamed to hpe_morpheus_cluster_layout in a later release). Its id feeds
-# the cluster's layout_id. cluster_type_code is set automatically by the provider
-# because config_hvm (a static config) is used.
-data "hpe_morpheus_cluster_type" "hvm_cluster" {
-  name = "HVM 1.3 Cluster on HVM/Ubuntu 24.04"
-}
 
 data "hpe_morpheus_service_plan" "manual" {
   name                = "Default Manual"
   provision_type_code = "manual"
 }
 
+# The cluster layout is a global Library object (GET /api/library/cluster-layouts),
+# e.g. "HVM 1.3 Cluster on HVM/Ubuntu 24.04". The pinned provider (v1.5.0) has no
+# data source to resolve a cluster LAYOUT by name -- hpe_morpheus_cluster_type
+# queries /api/cluster-types (high-level types like "HVM"/mvm-cluster), NOT
+# layouts -- so the required layout_id is supplied explicitly via a variable.
+# Look the id up with: GET /api/library/cluster-layouts?phrase=HVM.
+# cluster_type_code is set automatically by the provider because config_hvm (a
+# static config) is used.
 resource "hpe_morpheus_cluster" "coke_hvm" {
   provider = hpe.coke_finance
 
@@ -33,7 +32,7 @@ resource "hpe_morpheus_cluster" "coke_hvm" {
   description = "Coke HVM Cluster 1"
   cloud_id    = hpe_morpheus_cloud.coke_finance_hvm.id
   group_id    = hpe_morpheus_group.coke_finance.id
-  layout_id   = data.hpe_morpheus_cluster_type.hvm_cluster.id
+  layout_id   = var.coke_hvm_layout_id
 
   labels = ["terraform", "coke", "hvm"]
 

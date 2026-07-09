@@ -59,6 +59,11 @@ variable "coke_finance_hvm_ssh_password" {
   sensitive   = true
 }
 
+variable "coke_hvm_layout_id" {
+  type        = number
+  description = "ID of the cluster layout used for the Coke HVM Cluster (clusters.tf), e.g. \"HVM 1.3 Cluster on HVM/Ubuntu 24.04\". The pinned provider (v1.5.0) has no cluster-layout data source, so supply the id explicitly. Look it up with: GET /api/library/cluster-layouts?phrase=HVM."
+}
+
 variable "user_password" {
   type        = string
   description = "Password assigned to every generated tenant user (coke_user*/pepsi_user*). Use per-user secrets in production."
