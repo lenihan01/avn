@@ -52,9 +52,9 @@ resource "hpe_morpheus_role" "base" {
   }
 }
 
-# Standard end-user role -- one per tenant. multitenant = true means the master
-# tenant owns the role and Morpheus copies it into every sub-tenant, where it
-# can be assigned to that tenant's users.
+# Standard end-user role -- a single shared, multitenant role. multitenant = true
+# means the master tenant owns the role and Morpheus copies it into every
+# sub-tenant, where it can be assigned to that tenant's users.
 #
 # NOTE: Do not assign a multitenant role's master id directly to a
 # hpe_morpheus_user in a sub-tenant via Terraform. Morpheus substitutes the
@@ -64,10 +64,8 @@ resource "hpe_morpheus_role" "base" {
 # This example resolves the tenant-local copy with a hpe_morpheus_role data
 # source scoped to each sub-tenant (see users.tf) and assigns that id.
 resource "hpe_morpheus_role" "tenant_user" {
-  for_each = local.tenants
-
-  name        = "${each.value.name} User Role"
-  description = "Standard user role for the ${each.value.name} tenant"
+  name        = "Private Cloud Tenant Contributor"
+  description = "Shared standard user role for all tenants"
   role_type   = "user"
   multitenant = true
 
@@ -96,15 +94,15 @@ resource "hpe_morpheus_role" "tenant_user" {
   }
 }
 
-# Tenant administrator role -- assigned to each tenant's bootstrap admin, which
-# is created via the Morpheus API in users.tf (the user the sub-tenant providers
-# authenticate as). It includes the "admin-roles" feature permission so the
-# admin can read the tenant's roles for the data-source lookups in users.tf.
+# Tenant administrator role -- a single shared, multitenant role assigned to
+# every tenant's bootstrap admin, which is created via the Morpheus API in
+# users.tf (the user the sub-tenant providers authenticate as). It includes the
+# "admin-roles" feature permission so the admin can read the tenant's roles for
+# the data-source lookups in users.tf. Like the shared Base Role, one role is
+# owned by the master and copied into each sub-tenant.
 resource "hpe_morpheus_role" "tenant_admin" {
-  for_each = local.tenants
-
-  name        = "${each.value.name} Admin Role"
-  description = "Administrator role for the ${each.value.name} tenant"
+  name        = "Private Cloud Tenant Owner"
+  description = "Shared administrator role for all tenants"
   role_type   = "user"
   multitenant = true
 
@@ -119,14 +117,13 @@ resource "hpe_morpheus_role" "tenant_admin" {
     default_vdi_pool_access          = "full"
     default_workflow_access          = "full"
 
-    # Grant the tenant admin the tenant's full ceiling
-    # (local.tenant_role_permissions[each.key] -- the shared ceiling plus any
-    # per-tenant extras, such as Coke's provisioning-* features), so it is a
-    # complete administrator over the tenant's Administration features -- reading
-    # roles for the sub-tenant data sources (users.tf), creating the
-    # infrastructure group (clouds.tf), and managing clouds, servers, policies,
-    # etc. Because this matches the base-role ceiling, every code survives into
-    # the tenant-local copy.
-    feature_permissions = local.tenant_role_permissions[each.key]
+    # Grant the tenant admin the full ceiling
+    # (local.tenant_role_permissions["coke"] -- the shared ceiling plus Coke's
+    # provisioning-* extras), so it is a complete administrator over the tenant's
+    # Administration features -- reading roles for the sub-tenant data sources
+    # (users.tf), creating the infrastructure group (clouds.tf), and managing
+    # clouds, servers, policies, etc. Because this matches the base-role ceiling,
+    # every code survives into the tenant-local copy.
+    feature_permissions = local.tenant_role_permissions["coke"]
   }
 }

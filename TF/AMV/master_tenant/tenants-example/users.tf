@@ -39,7 +39,7 @@ resource "terraform_data" "admin" {
   triggers_replace = {
     tenant_id = hpe_morpheus_tenant.this[each.key].id
     username  = local.admin_creds[each.key].username
-    role_id   = hpe_morpheus_role.tenant_admin[each.key].id
+    role_id   = hpe_morpheus_role.tenant_admin.id
   }
 
   provisioner "local-exec" {
@@ -53,7 +53,7 @@ resource "terraform_data" "admin" {
       ADMIN_USER     = local.admin_creds[each.key].username
       ADMIN_EMAIL    = "${local.admin_creds[each.key].username}@example.com"
       ADMIN_PASS     = local.admin_creds[each.key].password
-      ROLE_ID        = tostring(hpe_morpheus_role.tenant_admin[each.key].id)
+      ROLE_ID        = tostring(hpe_morpheus_role.tenant_admin.id)
     }
   }
 }
@@ -67,7 +67,7 @@ resource "terraform_data" "admin" {
 
 data "hpe_morpheus_role" "coke_user_role" {
   provider = hpe.coke
-  name     = hpe_morpheus_role.tenant_user["coke"].name
+  name     = hpe_morpheus_role.tenant_user.name
 
   depends_on = [
     terraform_data.admin,
@@ -78,7 +78,7 @@ data "hpe_morpheus_role" "coke_user_role" {
 
 data "hpe_morpheus_role" "pepsi_user_role" {
   provider = hpe.pepsi
-  name     = hpe_morpheus_role.tenant_user["pepsi"].name
+  name     = hpe_morpheus_role.tenant_user.name
 
   depends_on = [
     terraform_data.admin,
