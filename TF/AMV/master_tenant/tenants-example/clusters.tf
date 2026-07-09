@@ -8,11 +8,16 @@
 # where its group and cloud live. depends_on defers creation until the
 # Coke-Finance bootstrap admin exists (for auth).
 #
-# The layout and service plan are global library objects, resolved by name via
-# the master provider.
+# The cluster layout and service plan are global library objects, resolved by
+# name via the master provider.
 ###############################################################################
 
-data "hpe_morpheus_instance_type_layout" "hvm_cluster" {
+# The cluster layout is resolved by name via the master provider. In provider
+# v1.5.0 the cluster-layout data source is named hpe_morpheus_cluster_type (it
+# was renamed to hpe_morpheus_cluster_layout in a later release). Its id feeds
+# the cluster's layout_id. cluster_type_code is set automatically by the provider
+# because config_hvm (a static config) is used.
+data "hpe_morpheus_cluster_type" "hvm_cluster" {
   name = "HVM 1.3 Cluster on HVM/Ubuntu 24.04"
 }
 
@@ -28,7 +33,7 @@ resource "hpe_morpheus_cluster" "coke_hvm" {
   description = "Coke HVM Cluster 1"
   cloud_id    = hpe_morpheus_cloud.coke_finance_hvm.id
   group_id    = hpe_morpheus_group.coke_finance.id
-  layout_id   = data.hpe_morpheus_instance_type_layout.hvm_cluster.id
+  layout_id   = data.hpe_morpheus_cluster_type.hvm_cluster.id
 
   labels = ["terraform", "coke", "hvm"]
 
