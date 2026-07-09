@@ -98,7 +98,11 @@ resource "hpe_morpheus_cloud" "vmware" {
     username                  = each.value.username
     password                  = each.value.password
     certificateProvider       = "internal"
-    enable_hypervisor_console = true
+    # Enable the hypervisor (VNC) console. Morpheus' VMware config expects the
+    # key "enableVnc" with an "on"/"off" string; the generic "config" map passes
+    # keys through verbatim, so an unrecognised key (e.g. enable_hypervisor_console)
+    # is silently ignored by the API. This is the "Enable Hypervisor Console" toggle.
+    enableVnc                 = "on"
   }
 }
 
