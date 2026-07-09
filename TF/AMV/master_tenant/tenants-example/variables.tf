@@ -59,6 +59,12 @@ variable "coke_finance_hvm_ssh_password" {
   sensitive   = true
 }
 
+variable "create_coke_finance_hvm" {
+  type        = bool
+  description = "Whether to create the Coke Finance HVM Cloud 1 (clouds.tf) and its dependent HVM cluster (clusters.tf). Defaults to false; both are disabled unless set true."
+  default     = false
+}
+
 variable "coke_hvm_layout_id" {
   type        = number
   description = "ID of the cluster layout used for the Coke HVM Cluster (clusters.tf), e.g. \"HVM 1.3 Cluster on HVM/Ubuntu 24.04\". The pinned provider (v1.5.0) has no cluster-layout data source, so supply the id explicitly. Look it up with: GET /api/library/cluster-layouts?phrase=HVM."
@@ -68,6 +74,20 @@ variable "coke_hvm_management_net_interface" {
   type        = string
   description = "Name of the management network interface on the Coke HVM Cluster hosts (clusters.tf), e.g. \"ens160\". Must exist on every ssh_host or the cluster create fails connectivity verification."
   default     = "ens160"
+}
+
+variable "pepsi_baremetal_ilo_username" {
+  type        = string
+  description = "iLO username for the Pepsi bare-metal (BMaaS) cloud (clouds.tf). Optional; leave empty to create the cloud without inline iLO credentials."
+  default     = ""
+  sensitive   = true
+}
+
+variable "pepsi_baremetal_ilo_password" {
+  type        = string
+  description = "iLO password for the Pepsi bare-metal (BMaaS) cloud (clouds.tf). Optional; leave empty to create the cloud without inline iLO credentials."
+  default     = ""
+  sensitive   = true
 }
 
 variable "user_password" {

@@ -26,9 +26,18 @@ coke_finance_hvm_ssh_password = "change-me"
 #   GET /api/library/cluster-layouts?phrase=HVM
 coke_hvm_layout_id = 0
 
+# Set true to create the Coke Finance HVM Cloud 1 and its HVM cluster
+# (clouds.tf/clusters.tf). Disabled by default.
+create_coke_finance_hvm = false
+
 # Management network interface on the Coke HVM Cluster hosts (clusters.tf).
 # Must exist on every host; defaults to "ens160".
 coke_hvm_management_net_interface = "ens160"
+
+# iLO credentials for the Pepsi bare-metal (BMaaS) cloud (clouds.tf). Optional;
+# leave empty to create the cloud without inline iLO credentials.
+pepsi_baremetal_ilo_username = ""
+pepsi_baremetal_ilo_password = ""
 
 # Password applied to every generated tenant user (coke_user*/pepsi_user*).
 user_password = "change-me"

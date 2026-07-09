@@ -37,6 +37,16 @@ resource "hpe_morpheus_group" "pepsi" {
   depends_on = [terraform_data.admin]
 }
 
+# Second Pepsi group, created through the hpe.pepsi provider so it belongs to the
+# Pepsi tenant. Hosts the bare-metal cloud below.
+resource "hpe_morpheus_group" "pepsi_baremetal" {
+  provider = hpe.pepsi
+  name     = "Pepsi Bare Metal Group"
+  code     = "pepsi-bare-metal-group"
+
+  depends_on = [terraform_data.admin]
+}
+
 # Group owned by the Coke-Finance sub-tenant. Created through the
 # hpe.coke_finance provider (which logs in as the Coke-Finance bootstrap admin),
 # so the group belongs to Coke-Finance. depends_on defers creation until that
@@ -93,7 +103,12 @@ resource "hpe_morpheus_cloud" "vmware" {
 # /api/zone-types list offers no such code, and "standard" ("Private Cloud") is
 # the only generic private cloud available. If the MVM/HPE-VM tech pack is
 # enabled on the appliance later, switch cloud_type_code to that code.
+#
+# Currently disabled: toggle both this cloud and the HVM cluster (clusters.tf)
+# with var.create_coke_finance_hvm; it defaults to false, so neither is created.
 resource "hpe_morpheus_cloud" "coke_finance_hvm" {
+  count = var.create_coke_finance_hvm ? 1 : 0
+
   name      = "Coke Finance HVM Cloud 1"
   tenant_id = hpe_morpheus_tenant.coke_subtenant["coke_finance"].id
   group_id  = hpe_morpheus_group.coke_finance.id
@@ -118,5 +133,43 @@ resource "hpe_morpheus_cloud" "coke_finance_hvm" {
   config = {
     certificateProvider        = "internal"
     enableNetworkTypeSelection = false
+  }
+}
+
+# HPE bare-metal (BMaaS) cloud, owned by the Pepsi tenant and assigned to the
+# "Pepsi Bare Metal Group" above. Like the other clouds it is created by the
+# master provider with tenant_id targeting the sub-tenant.
+#
+# cloud_type_code "hpe-baremetal-plugin.cloud" is the code the appliance's
+# /api/zone-types exposes for this plugin. Its only required config option is
+# "type" (Credentials) -- "local" means iLO credentials are entered inline
+# (iloUsername/iloPassword) rather than referencing a stored credential. All
+# other option types (network selection, VNC, BMC CIDR, discovery, etc.) are
+# optional and left at their defaults. Supply iLO credentials via the variables
+# below; empty values create the cloud without iLO management configured.
+resource "hpe_morpheus_cloud" "pepsi_baremetal" {
+  name      = "Pepsi Bare Metal Cloud 1"
+  tenant_id = hpe_morpheus_tenant.this["pepsi"].id
+  group_id  = hpe_morpheus_group.pepsi_baremetal.id
+
+  code            = "pepsibaremetalcloud1"
+  enabled         = true
+  visibility      = "private"
+  cloud_type_code = "hpe-baremetal-plugin.cloud"
+
+  agent_install_mode       = "ssh"
+  appliance_url            = var.morpheus_url
+  auto_recover_power_state = true
+  import_existing_vms      = "off"
+
+  costing_mode    = "costing"
+  guidance_mode   = "off"
+  security_mode   = "off"
+  keyboard_layout = "us"
+
+  config = {
+    type        = "local"
+    iloUsername = var.pepsi_baremetal_ilo_username
+    iloPassword = var.pepsi_baremetal_ilo_password
   }
 }

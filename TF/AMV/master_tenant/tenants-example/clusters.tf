@@ -26,11 +26,12 @@ data "hpe_morpheus_service_plan" "manual" {
 # cluster_type_code is set automatically by the provider because config_hvm (a
 # static config) is used.
 resource "hpe_morpheus_cluster" "coke_hvm" {
+  count    = var.create_coke_finance_hvm ? 1 : 0
   provider = hpe.coke_finance
 
   name        = "Coke HVM Cluster 1"
   description = "Coke HVM Cluster 1"
-  cloud_id    = hpe_morpheus_cloud.coke_finance_hvm.id
+  cloud_id    = hpe_morpheus_cloud.coke_finance_hvm[count.index].id
   group_id    = hpe_morpheus_group.coke_finance.id
   layout_id   = var.coke_hvm_layout_id
 
