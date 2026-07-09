@@ -58,6 +58,39 @@ resource "terraform_data" "admin" {
   }
 }
 
+# --- Bootstrap admin for the Coke-provider sub-tenants ---------------------
+# Same pattern as terraform_data.admin above, but for tenants created through
+# the hpe.coke provider (local.coke_subtenants, e.g. Coke-Finance). Creates each
+# tenant's first user (a bootstrap admin) via the Morpheus API, authenticating
+# as the MASTER admin and assigning the multitenant "Private Cloud Tenant Owner"
+# role (Morpheus maps it to the tenant-local copy server-side). The
+# hpe_morpheus_tenant.coke_subtenant reference defers this until the tenant
+# exists.
+resource "terraform_data" "coke_subtenant_admin" {
+  for_each = local.coke_subtenants
+
+  triggers_replace = {
+    tenant_id = hpe_morpheus_tenant.coke_subtenant[each.key].id
+    username  = local.coke_subtenant_admin_creds[each.key].username
+    role_id   = hpe_morpheus_role.tenant_admin.id
+  }
+
+  provisioner "local-exec" {
+    command = "bash \"${path.module}/bootstrap_admin.sh\""
+    environment = {
+      MORPH_URL      = var.morpheus_url
+      MORPH_USER     = var.morpheus_username
+      MORPH_PASS     = var.morpheus_password
+      MORPH_INSECURE = tostring(var.morpheus_insecure)
+      TENANT_ID      = tostring(hpe_morpheus_tenant.coke_subtenant[each.key].id)
+      ADMIN_USER     = local.coke_subtenant_admin_creds[each.key].username
+      ADMIN_EMAIL    = "${local.coke_subtenant_admin_creds[each.key].username}@example.com"
+      ADMIN_PASS     = local.coke_subtenant_admin_creds[each.key].password
+      ROLE_ID        = tostring(hpe_morpheus_role.tenant_admin.id)
+    }
+  }
+}
+
 # --- Resolve each tenant's local user-role id -----------------------------
 # Read through the sub-tenant providers (authenticated as the bootstrap admin)
 # to get the tenant-LOCAL copy of the multitenant user role. Provider aliases

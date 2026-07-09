@@ -42,6 +42,17 @@ variable "pepsi_admin_password" {
   sensitive   = true
 }
 
+variable "coke_finance_admin_username" {
+  type        = string
+  description = "Username for the bootstrap administrator created via the Morpheus API in the Coke-Finance sub-tenant (users.tf), following the same pattern as the Coke tenant admin."
+}
+
+variable "coke_finance_admin_password" {
+  type        = string
+  description = "Password for the Coke-Finance sub-tenant bootstrap administrator (created via the Morpheus API in users.tf)."
+  sensitive   = true
+}
+
 variable "user_password" {
   type        = string
   description = "Password assigned to every generated tenant user (coke_user*/pepsi_user*). Use per-user secrets in production."

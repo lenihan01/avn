@@ -200,6 +200,17 @@ locals {
     }
   }
 
+  # Bootstrap admin credentials for the Coke-provider-created sub-tenants
+  # (local.coke_subtenants). Keyed by the same keys as that map; consumed by
+  # terraform_data.coke_subtenant_admin (users.tf), which creates each one's
+  # first user via the Morpheus API -- the same pattern as admin_creds above.
+  coke_subtenant_admin_creds = {
+    coke_finance = {
+      username = var.coke_finance_admin_username
+      password = var.coke_finance_admin_password
+    }
+  }
+
   # Per-tenant VMware (vCenter) cloud connection settings. Kept separate from
   # local.tenants so the sensitive credentials don't taint the tenant/role plan
   # output. clouds.tf fans out over this map.

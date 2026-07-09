@@ -13,6 +13,11 @@ coke_admin_password  = "change-me"
 pepsi_admin_username = "pepsi-admin"
 pepsi_admin_password = "change-me"
 
+# Bootstrap admin for the Coke-provider-created sub-tenant Coke-Finance
+# (created via the Morpheus API in users.tf, same pattern as coke-admin).
+coke_finance_admin_username = "coke-finance-admin"
+coke_finance_admin_password = "change-me"
+
 # Password applied to every generated tenant user (coke_user*/pepsi_user*).
 user_password = "change-me"
 
