@@ -14,6 +14,19 @@ locals {
     }
   }
 
+  # Tenants created THROUGH the Coke tenant's provider (hpe.coke, authenticated
+  # as the Coke bootstrap admin) rather than the master provider. The Coke
+  # admin's admin-accounts ("Tenants") permission lets the sub-tenant provider
+  # create tenants via the API. Add entries here to create more such tenants;
+  # they fan out from hpe_morpheus_tenant.coke_subtenant (tenants.tf).
+  coke_subtenants = {
+    coke_finance = {
+      name        = "Coke-Finance"
+      subdomain   = "coke-finance"
+      description = "Tenant created via the Coke tenant provider"
+    }
+  }
+
   # Feature-permission ceiling shared by every tenant's base role (roles.tf).
   # The base (account) role caps what any role in the tenant may grant, and that
   # cap is materialized when roles are seeded into the tenant. It is deliberately

@@ -11,30 +11,36 @@ resource "hpe_morpheus_tenant" "this" {
   currency     = "USD"
 }
 
-# EXPERIMENTAL: attempt to create "Coke-Finance" using the COKE tenant's
-# provider (hpe.coke, authenticated as the Coke bootstrap admin) rather than the
-# master provider.
+# Tenants created through the COKE tenant's provider (hpe.coke, authenticated as
+# the Coke bootstrap admin) rather than the master provider. Confirmed working:
+# the Coke admin's admin-accounts ("Tenants") feature lets the sub-tenant
+# provider create tenants via the Morpheus API. Add more entries to
+# local.coke_subtenants (locals.tf) to create additional ones.
 #
-# CAVEAT -- Morpheus tenancy is flat: every tenant is a child of the MASTER
-# tenant, and the account model has no parent id (only a `master` boolean). So
-# even issued through the coke provider this cannot produce a tenant that is
-# nested under Coke. Expect one of two outcomes at apply time:
-#   1. The API rejects tenant creation from a sub-tenant context (HTTP 403, even
-#      though the Coke admin holds the admin-accounts "Tenants" feature), or
-#   2. It succeeds, but Coke-Finance is simply another sibling sub-tenant of the
-#      master -- not a child of Coke.
+# CAVEAT -- Morpheus tenancy is flat: the account model has no parent id (only a
+# `master` boolean), so these are NOT nested under Coke; they are created in the
+# master's tenant space. base_role_id references the shared master-owned Base
+# Role, which the create accepts.
 #
-# depends_on defers the create until the Coke bootstrap admin (users.tf) exists,
+# depends_on defers each create until the Coke bootstrap admin (users.tf) exists,
 # so the hpe.coke provider can authenticate.
-resource "hpe_morpheus_tenant" "coke_finance" {
+resource "hpe_morpheus_tenant" "coke_subtenant" {
+  for_each = local.coke_subtenants
   provider = hpe.coke
 
-  name         = "Coke-Finance"
-  description  = "Attempted sub-tenant of Coke (Morpheus tenancy is flat -- see note in tenants.tf)"
-  subdomain    = "coke-finance"
+  name         = each.value.name
+  description  = each.value.description
+  subdomain    = each.value.subdomain
   enabled      = true
   base_role_id = hpe_morpheus_role.base.id
   currency     = "USD"
 
   depends_on = [terraform_data.admin]
+}
+
+# Preserve the already-created Coke-Finance tenant across the refactor from a
+# single resource to the for_each map above (no destroy/recreate).
+moved {
+  from = hpe_morpheus_tenant.coke_finance
+  to   = hpe_morpheus_tenant.coke_subtenant["coke_finance"]
 }
