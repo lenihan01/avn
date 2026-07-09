@@ -64,6 +64,12 @@ variable "coke_hvm_layout_id" {
   description = "ID of the cluster layout used for the Coke HVM Cluster (clusters.tf), e.g. \"HVM 1.3 Cluster on HVM/Ubuntu 24.04\". The pinned provider (v1.5.0) has no cluster-layout data source, so supply the id explicitly. Look it up with: GET /api/library/cluster-layouts?phrase=HVM."
 }
 
+variable "coke_hvm_management_net_interface" {
+  type        = string
+  description = "Name of the management network interface on the Coke HVM Cluster hosts (clusters.tf), e.g. \"ens160\". Must exist on every ssh_host or the cluster create fails connectivity verification."
+  default     = "ens160"
+}
+
 variable "user_password" {
   type        = string
   description = "Password assigned to every generated tenant user (coke_user*/pepsi_user*). Use per-user secrets in production."

@@ -51,7 +51,7 @@ resource "hpe_morpheus_cluster" "coke_hvm" {
     ssh_username             = "ubuntu"
     ssh_password_wo          = var.coke_finance_hvm_ssh_password
     ssh_password_wo_version  = 1
-    management_net_interface = "eth0"
+    management_net_interface = var.coke_hvm_management_net_interface
 
     # Existing hosts added to the cluster.
     ssh_hosts = [

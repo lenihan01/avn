@@ -26,6 +26,10 @@ coke_finance_hvm_ssh_password = "change-me"
 #   GET /api/library/cluster-layouts?phrase=HVM
 coke_hvm_layout_id = 0
 
+# Management network interface on the Coke HVM Cluster hosts (clusters.tf).
+# Must exist on every host; defaults to "ens160".
+coke_hvm_management_net_interface = "ens160"
+
 # Password applied to every generated tenant user (coke_user*/pepsi_user*).
 user_password = "change-me"
 
