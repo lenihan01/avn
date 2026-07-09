@@ -205,14 +205,14 @@ variable "ubuntu_2004_node_type_id" {
 
 # --- Appliance provisioning settings (settings.tf) ---------------------------
 # Default cloud-init credentials Morpheus injects into provisioned Linux
-# instances, set via hpe_morpheus_setting_provisioning.
+# instances, set via set_provisioning_settings.sh (PUT /api/provisioning-settings).
 variable "cloudinit_username" {
   type        = string
-  description = "Default cloud-init username applied to provisioned instances (settings.tf / hpe_morpheus_setting_provisioning)."
+  description = "Default cloud-init username applied to provisioned instances (settings.tf / set_provisioning_settings.sh)."
 }
 
 variable "cloudinit_password" {
   type        = string
-  description = "Default cloud-init password applied to provisioned instances (settings.tf / hpe_morpheus_setting_provisioning)."
+  description = "Default cloud-init password applied to provisioned instances (settings.tf / set_provisioning_settings.sh)."
   sensitive   = true
 }

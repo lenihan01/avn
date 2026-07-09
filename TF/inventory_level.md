@@ -79,3 +79,74 @@ Report to HPE: for VMware (and likely all cloud types) the provider should set
 the **top-level** `zone.inventoryLevel` on create/update, not just
 `config.inventoryLevel`. This requires the SDK request model
 (`AddCloudsRequestZone`) to expose a top-level `inventoryLevel` field.
+
+---
+
+# Provider bug: hpe_morpheus_setting_provisioning fails on apply
+
+## Summary
+
+Applying a `hpe_morpheus_setting_provisioning` resource (used to set the default
+cloud-init credentials) fails with:
+
+```
+Error: Not found in response: ProvisioningSettings
+  with hpe_morpheus_setting_provisioning.this,
+  on settings.tf line 15, in resource "hpe_morpheus_setting_provisioning" "this":
+```
+
+The setting is actually applied on the appliance -- only the provider errors.
+
+- Provider: `HPE/hpe` **v1.5.0** (pinned in `versions.tf`)
+- Resource: `hpe_morpheus_setting_provisioning`
+
+## Root cause
+
+After `PUT /api/provisioning-settings`, the provider asserts that the PUT
+**response body** contains a `provisioningSettings` object and errors when it is
+nil (`morpheus/sdkv2/resources/setting/setting_provisioning.go:477-479`, and the
+same check on read at `:322-323`). Morpheus' update endpoint responds with only
+`{"success":true}` -- it does **not** echo the settings object back -- so the
+assertion always fails even though the update succeeded.
+
+## Evidence
+
+The PUT succeeds and returns no object:
+
+```bash
+curl -sk -X PUT -H "Authorization: BEARER $TOKEN" -H "Content-Type: application/json" \
+  "$URL/api/provisioning-settings" \
+  -d '{"provisioningSettings":{"cloudInitUsername":"cloud-user"}}'
+# => {"success":true}
+```
+
+A subsequent GET shows the value was stored (so the apply's "failure" is cosmetic):
+
+```bash
+curl -sk -H "Authorization: BEARER $TOKEN" "$URL/api/provisioning-settings" \
+  | jq '.provisioningSettings.cloudInitUsername'
+# => "cloud-user"
+```
+
+Note the read path (`:294-323`) works because `GET /api/provisioning-settings`
+*does* return `provisioningSettings`; it is specifically the **update
+response** that omits it.
+
+## Workaround (in this module)
+
+Because the provider errors on a successful update, cloud-init credentials are
+set with a post-apply API call instead:
+
+- `set_provisioning_settings.sh` -- authenticates as the master admin and PUTs
+  only the cloud-init attributes that are set, checking the `.success` flag
+  (not an echoed object). Every other provisioning setting is left untouched.
+- `terraform_data.provisioning_settings` in `settings.tf` -- runs the script via
+  a `local-exec` provisioner keyed on the cloud-init username/password. Mirrors
+  the `bootstrap_admin.sh` / `set_inventory_level.sh` pattern.
+
+## Fix upstream
+
+Report to HPE: the resource should treat `{"success":true}` from
+`PUT /api/provisioning-settings` as success and re-read the settings via GET,
+rather than requiring the update response to echo a `provisioningSettings`
+object.
