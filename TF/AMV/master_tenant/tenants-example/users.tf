@@ -54,6 +54,13 @@ resource "terraform_data" "admin" {
       ADMIN_EMAIL    = "${local.admin_creds[each.key].username}@example.com"
       ADMIN_PASS     = local.admin_creds[each.key].password
       ROLE_ID        = tostring(hpe_morpheus_role.tenant_admin.id)
+
+      # Linux/Windows guest-OS credentials: same as the admin's own
+      # username/password (e.g. "coke-admin" / its password).
+      LINUX_USER   = local.admin_creds[each.key].username
+      LINUX_PASS   = local.admin_creds[each.key].password
+      WINDOWS_USER = local.admin_creds[each.key].username
+      WINDOWS_PASS = local.admin_creds[each.key].password
     }
   }
 }
@@ -87,6 +94,13 @@ resource "terraform_data" "coke_subtenant_admin" {
       ADMIN_EMAIL    = "${local.coke_subtenant_admin_creds[each.key].username}@example.com"
       ADMIN_PASS     = local.coke_subtenant_admin_creds[each.key].password
       ROLE_ID        = tostring(hpe_morpheus_role.tenant_admin.id)
+
+      # Linux/Windows guest-OS credentials: same as the admin's own
+      # username/password (e.g. "coke-finance-admin" / its password).
+      LINUX_USER   = local.coke_subtenant_admin_creds[each.key].username
+      LINUX_PASS   = local.coke_subtenant_admin_creds[each.key].password
+      WINDOWS_USER = local.coke_subtenant_admin_creds[each.key].username
+      WINDOWS_PASS = local.coke_subtenant_admin_creds[each.key].password
     }
   }
 }
@@ -136,6 +150,15 @@ resource "hpe_morpheus_user" "coke_user" {
   first_name          = "Coke"
   last_name           = "User ${count.index}"
   role_ids            = [data.hpe_morpheus_role.coke_user_role.id]
+
+  # Linux/Windows guest-OS credentials: same as the user's own username and
+  # password.
+  linux_username              = "coke_user${count.index}"
+  linux_password_wo           = var.user_password
+  linux_password_wo_version   = 1
+  windows_username            = "coke_user${count.index}"
+  windows_password_wo         = var.user_password
+  windows_password_wo_version = 1
 }
 
 resource "hpe_morpheus_user" "pepsi_user" {
@@ -149,4 +172,13 @@ resource "hpe_morpheus_user" "pepsi_user" {
   first_name          = "Pepsi"
   last_name           = "User ${count.index}"
   role_ids            = [data.hpe_morpheus_role.pepsi_user_role.id]
+
+  # Linux/Windows guest-OS credentials: same as the user's own username and
+  # password.
+  linux_username              = "pepsi_user${count.index}"
+  linux_password_wo           = var.user_password
+  linux_password_wo_version   = 1
+  windows_username            = "pepsi_user${count.index}"
+  windows_password_wo         = var.user_password
+  windows_password_wo_version = 1
 }

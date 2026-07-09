@@ -21,6 +21,12 @@
 #   ADMIN_PASS      Bootstrap admin password
 #   ROLE_ID         Master admin role id to assign (Morpheus maps it to the
 #                   tenant-local copy server-side)
+#
+# Optional environment variables (each included only when non-empty):
+#   LINUX_USER      Linux username set on the user (guest OS default)
+#   LINUX_PASS      Linux password set on the user
+#   WINDOWS_USER    Windows username set on the user (guest OS default)
+#   WINDOWS_PASS    Windows password set on the user
 set -euo pipefail
 
 for cmd in curl jq; do
@@ -66,12 +72,27 @@ if curl -G "${CURL_OPTS[@]}" "${AUTH[@]}" \
 fi
 
 # 3) Create the admin user in the sub-tenant.
+#
+# Optionally set Linux/Windows credentials (used as the default guest OS
+# username/password for instances provisioned by this user). Each field is
+# included in the request only when its env var is non-empty, so callers that
+# don't set them create the user unchanged.
 BODY=$(jq -n \
   --arg u "${ADMIN_USER}" \
   --arg e "${ADMIN_EMAIL}" \
   --arg p "${ADMIN_PASS}" \
   --argjson r "${ROLE_ID}" \
-  '{user: {username: $u, email: $e, password: $p, roles: [{id: $r}]}}')
+  --arg lu "${LINUX_USER:-}" \
+  --arg lp "${LINUX_PASS:-}" \
+  --arg wu "${WINDOWS_USER:-}" \
+  --arg wp "${WINDOWS_PASS:-}" \
+  '{user: (
+      {username: $u, email: $e, password: $p, roles: [{id: $r}]}
+      + (if $lu == "" then {} else {linuxUsername: $lu} end)
+      + (if $lp == "" then {} else {linuxPassword: $lp} end)
+      + (if $wu == "" then {} else {windowsUsername: $wu} end)
+      + (if $wp == "" then {} else {windowsPassword: $wp} end)
+   )}')
 
 RESP_FILE=$(mktemp)
 trap 'rm -f "${RESP_FILE}"' EXIT
