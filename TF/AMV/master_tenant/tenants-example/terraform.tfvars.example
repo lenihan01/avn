@@ -74,3 +74,8 @@ coke_ansible_url = "https://github.com/gomorpheus/morpheus-ansible.git"
 # snippet that lists the candidates and their provision type; use the "vmware"
 # one. The example value below is illustrative -- replace it with your id.
 ubuntu_2004_node_type_id = 0
+
+# Default cloud-init credentials injected into provisioned Linux instances
+# (settings.tf / hpe_morpheus_setting_provisioning).
+cloudinit_username = "cloud-user"
+cloudinit_password = "change-me"

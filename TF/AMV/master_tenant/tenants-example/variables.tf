@@ -202,3 +202,17 @@ variable "ubuntu_2004_node_type_id" {
   type        = number
   description = "Id of the VMware 'Ubuntu 20.04' node type to bind to the Ubuntu 20.04 layout (instance_types.tf). Resolve by id -- the name matches one node type per technology. See the comment above for how to find it."
 }
+
+# --- Appliance provisioning settings (settings.tf) ---------------------------
+# Default cloud-init credentials Morpheus injects into provisioned Linux
+# instances, set via hpe_morpheus_setting_provisioning.
+variable "cloudinit_username" {
+  type        = string
+  description = "Default cloud-init username applied to provisioned instances (settings.tf / hpe_morpheus_setting_provisioning)."
+}
+
+variable "cloudinit_password" {
+  type        = string
+  description = "Default cloud-init password applied to provisioned instances (settings.tf / hpe_morpheus_setting_provisioning)."
+  sensitive   = true
+}
