@@ -106,6 +106,38 @@ resource "hpe_morpheus_cloud" "vmware" {
   }
 }
 
+# Force the TOP-LEVEL zone.inventoryLevel on each VMware cloud.
+#
+# The hpe_morpheus_cloud resource (provider v1.5.0) only writes "inventoryLevel"
+# into the cloud's nested "config" map; the request model has no top-level
+# inventoryLevel field. Morpheus drives VM inventory off the TOP-LEVEL
+# zone.inventoryLevel, which therefore stays "off" and no VMs are inventoried
+# (existing hosts are, but serverCounts.vm stays 0). This PUTs the real
+# top-level property via the API. The script is idempotent (skips when already
+# set) and re-runs if the cloud id or desired level changes.
+#
+# INVENTORY_LEVEL must match import_existing_vms on the cloud above ("basic").
+resource "terraform_data" "vmware_inventory_level" {
+  for_each = local.cloud_config
+
+  triggers_replace = {
+    cloud_id = hpe_morpheus_cloud.vmware[each.key].id
+    level    = "basic"
+  }
+
+  provisioner "local-exec" {
+    command = "bash \"${path.module}/set_inventory_level.sh\""
+    environment = {
+      MORPH_URL       = var.morpheus_url
+      MORPH_USER      = var.morpheus_username
+      MORPH_PASS      = var.morpheus_password
+      MORPH_INSECURE  = tostring(var.morpheus_insecure)
+      CLOUD_ID        = tostring(hpe_morpheus_cloud.vmware[each.key].id)
+      INVENTORY_LEVEL = "basic"
+    }
+  }
+}
+
 # Private Cloud (cloud_type_code "standard"), owned by the Coke-Finance
 # sub-tenant and assigned to the "Coke HVM Group" above. Like the VMware clouds,
 # it is created by the master provider with tenant_id targeting the sub-tenant.
