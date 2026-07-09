@@ -71,10 +71,17 @@ resource "hpe_morpheus_cloud" "vmware" {
   visibility      = "private"
   cloud_type_code = "vmware"
 
+  # Set explicitly (to the vCenter datacenter) to avoid a provider bug where an
+  # unset (null) data_center_name comes back as "" after apply, producing a
+  # "Provider produced inconsistent result" error on updates.
+  data_center_name = each.value.datacenter
+
   agent_install_mode       = "ssh"
   appliance_url            = var.morpheus_url
   auto_recover_power_state = true
-  import_existing_vms      = "off"
+  # Inventory existing VMs already present in vCenter ("basic" = inventory only,
+  # without installing an agent; use "full" to also install agents).
+  import_existing_vms = "basic"
 
   costing_mode    = "costing"
   guidance_mode   = "off"
