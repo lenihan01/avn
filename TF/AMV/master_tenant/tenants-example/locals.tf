@@ -55,6 +55,13 @@ locals {
     "admin-accounts",
 
     "admin-zones",
+
+    # Clusters ("infrastructure-cluster"): manage clusters (Infrastructure >
+    # Clusters). Required for the tenant admin to create/manage the HVM cluster
+    # (clusters.tf); feeds both the base-role ceiling and the "Private Cloud
+    # Tenant Owner" (tenant_admin) role via tenant_role_permissions.
+    "infrastructure-cluster",
+
     "admin-servers",
     "admin-server-software",
     "admin-server-devices",
