@@ -44,7 +44,7 @@ coke_ansible_url = "https://github.com/gomorpheus/morpheus-ansible.git"
 # Id of the VMware "Ubuntu 20.04" node type, bound to the "Coke Ubuntu 20.04
 # Layout" (instance_types.tf). Required: Morpheus ships one "Ubuntu 20.04" node
 # type per technology, so it must be selected by id rather than name. See the
-# comment on variable "coke_ubuntu_2004_node_type_id" in variables.tf for a curl
+# comment on variable "ubuntu_2004_node_type_id" in variables.tf for a curl
 # snippet that lists the candidates and their provision type; use the "vmware"
 # one. The example value below is illustrative -- replace it with your id.
-coke_ubuntu_2004_node_type_id = 0
+ubuntu_2004_node_type_id = 0

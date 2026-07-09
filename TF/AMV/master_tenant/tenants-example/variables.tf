@@ -150,7 +150,7 @@ variable "coke_ansible_branch" {
 #     | jq -r '.containerTypes[] | select(.name=="Ubuntu 20.04") | "\(.id)\t\(.provisionType.code)"'
 #
 # then use the id of the row whose provision type code is "vmware".
-variable "coke_ubuntu_2004_node_type_id" {
+variable "ubuntu_2004_node_type_id" {
   type        = number
-  description = "Id of the VMware 'Ubuntu 20.04' node type to bind to the Coke Ubuntu 20.04 layout (instance_types.tf). Resolve by id -- the name matches one node type per technology. See the comment above for how to find it."
+  description = "Id of the VMware 'Ubuntu 20.04' node type to bind to the Ubuntu 20.04 layout (instance_types.tf). Resolve by id -- the name matches one node type per technology. See the comment above for how to find it."
 }

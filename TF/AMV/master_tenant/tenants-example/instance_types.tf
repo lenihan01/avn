@@ -25,16 +25,16 @@
 # Only the Coke tenant was requested, so this is declared once, for Coke.
 ###############################################################################
 
-resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
+resource "hpe_morpheus_instance_type" "ubuntu_wordpress" {
   provider = hpe.coke
 
-  name        = "coke ubuntu wordpress"
-  code        = "coke_ubuntu_wordpress"
-  description = "Ubuntu WordPress instance type for the ${local.tenants["coke"].name} tenant."
+  name        = "ubuntu wordpress"
+  code        = "ubuntu_wordpress"
+  description = "Ubuntu WordPress instance type."
   category    = "web"
   visibility  = "private"
   featured    = true
-  labels      = ["coke", "terraform"]
+  labels      = ["wordpress", "terraform"]
 
   # Tail of the Coke automation chain (integration -> shell task -> ansible task
   # -> workflow -> instance type): follows the workflow so the Coke tenant's
@@ -52,7 +52,7 @@ resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
 ###############################################################################
 # Coke instance type layout
 #
-# Adds a VMware layout ("Coke Ubuntu 20.04 Layout", version 20.04) to the Coke
+# Adds a VMware layout ("Ubuntu 20.04 Layout", version 20.04) to the Coke
 # tenant's "coke ubuntu wordpress" instance type (above). Like the instance type
 # itself, hpe_morpheus_instance_type_layout has no tenant_id -- it belongs to
 # whichever tenant its provider is authenticated as -- so it is created through
@@ -76,17 +76,17 @@ resource "hpe_morpheus_instance_type" "coke_ubuntu_wordpress" {
 # ceiling (locals.tf) -- no extra permission is required.
 ###############################################################################
 
-resource "hpe_morpheus_instance_type_layout" "coke_ubuntu_2004_layout" {
+resource "hpe_morpheus_instance_type_layout" "ubuntu_2004_layout" {
   provider = hpe.coke
 
-  instance_type_id = hpe_morpheus_instance_type.coke_ubuntu_wordpress.id
-  name             = "Coke Ubuntu 20.04 Layout"
+  instance_type_id = hpe_morpheus_instance_type.ubuntu_wordpress.id
+  name             = "Ubuntu 20.04 Layout"
   version          = "20.04"
   technology       = "vmware"
   creatable        = true
-  labels           = ["coke", "terraform"]
+  labels           = ["wordpress", "terraform"]
 
-  node_type_ids = [var.coke_ubuntu_2004_node_type_id]
+  node_type_ids = [var.ubuntu_2004_node_type_id]
 
   # Associate the Coke provisioning workflow (workflows.tf) with this layout, so
   # instances created from it run that workflow at provision. The layout already
