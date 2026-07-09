@@ -7,5 +7,9 @@ terraform {
       source  = "HPE/hpe"
       version = "1.5.0"
     }
+    external = {
+      source  = "hashicorp/external"
+      version = ">= 2.3.0"
+    }
   }
 }

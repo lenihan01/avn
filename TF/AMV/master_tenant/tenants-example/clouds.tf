@@ -136,6 +136,26 @@ resource "hpe_morpheus_cloud" "coke_finance_hvm" {
   }
 }
 
+# The HPE bare-metal cloud type is not installed by default -- it appears in the
+# appliance's /api/zone-types only once the bare-metal plugin is present. Detect
+# that at plan time so the cloud below is created only when the type exists.
+#
+# The provider's own hpe_morpheus_cloud_type data source can't be used for this:
+# its SDK hard-errors ("found 0 Clouds Types") when the type is absent, which
+# fails the whole plan. Instead, zone_type_present.sh queries /api/zone-types and
+# returns present=true/false, letting count skip the cloud gracefully.
+data "external" "baremetal_cloud_type" {
+  program = ["bash", "${path.module}/zone_type_present.sh"]
+
+  query = {
+    url      = var.morpheus_url
+    username = var.morpheus_username
+    password = var.morpheus_password
+    insecure = tostring(var.morpheus_insecure)
+    code     = "hpe-baremetal-plugin.cloud"
+  }
+}
+
 # HPE bare-metal (BMaaS) cloud, owned by the Pepsi tenant and assigned to the
 # "Pepsi Bare Metal Group" above. Like the other clouds it is created by the
 # master provider with tenant_id targeting the sub-tenant.
@@ -147,7 +167,13 @@ resource "hpe_morpheus_cloud" "coke_finance_hvm" {
 # other option types (network selection, VNC, BMC CIDR, discovery, etc.) are
 # optional and left at their defaults. Supply iLO credentials via the variables
 # below; empty values create the cloud without iLO management configured.
+#
+# count gates creation on the bare-metal plugin being installed (see the
+# data.external above): the cloud is created only when the type is present, so
+# the config applies cleanly on appliances without the plugin.
 resource "hpe_morpheus_cloud" "pepsi_baremetal" {
+  count = data.external.baremetal_cloud_type.result.present == "true" ? 1 : 0
+
   name      = "Pepsi Bare Metal Cloud 1"
   tenant_id = hpe_morpheus_tenant.this["pepsi"].id
   group_id  = hpe_morpheus_group.pepsi_baremetal.id
