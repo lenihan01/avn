@@ -54,6 +54,10 @@ create_coke_identity_source = false
 # coke_ad_name             = "Coke Active Directory"
 # coke_ad_server           = "dc01.corp.example.com"
 # coke_ad_domain           = "corp.example.com"
+# NOTE: in a double-quoted HCL string a backslash starts an escape sequence, so a
+# DOWN-LEVEL logon name must double the backslash: "hpelabs\\administrator" (which
+# is the literal hpelabs\administrator). Alternatively use the UPN form with no
+# backslash, e.g. "administrator@corp.example.com".
 # coke_ad_binding_username = "svc-morpheus"
 # coke_ad_binding_password = "change-me"
 # coke_ad_use_ssl          = false
