@@ -1,0 +1,9 @@
+name: morpheus-list-clouds-instances
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+description: >-
+  List every HPE Morpheus cloud and the instances provisioned in each one, via
+  the Morpheus REST API. The Pulumi equivalent of the Ansible playbook
+  ../ansible/list_clouds_and_instances.yml.

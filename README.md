@@ -8,6 +8,7 @@ two independent, self-contained areas:
 |---|---|
 | [`TF/`](TF/) | A **Terraform module** that stands up a complete two-tenant (Coke / Pepsi) Morpheus example — tenants, roles, users, VMware clouds, policies, tasks, workflows and instance types — using the `HPE/hpe` provider. This is the primary, declarative way to reproduce the environment. |
 | [`ansible/`](ansible/) | **Ansible playbooks** that call the Morpheus REST API — obtain an API token from a username/password, and list clouds and the instances in each. See [`ansible/README.md`](ansible/README.md). |
+| [`pulumi/`](pulumi/) | A **Pulumi (Python) program** that calls the Morpheus REST API to list clouds and the instances in each, exporting the result as stack outputs. The Pulumi equivalent of the Ansible listing playbook. See [`pulumi/README.md`](pulumi/README.md). |
 | [`API/`](API/) | A library of **standalone `bash` + `curl` scripts** that exercise the Morpheus REST API directly. Useful for exploration, one-off operations, and understanding the API calls that back the Terraform workarounds. |
 
 ## `TF/` — Terraform module
@@ -31,6 +32,15 @@ Ansible playbooks that talk to the Morpheus REST API from `localhost`:
 The shared token-retrieval tasks live in `ansible/tasks/get_morpheus_token.yml`.
 Only the bundled `ansible.builtin` modules are used (no extra collections). See
 [`ansible/README.md`](ansible/README.md) for dependencies, variables and usage.
+
+## `pulumi/` — Morpheus clouds & instances (Pulumi)
+
+A Pulumi (Python) program that lists every Morpheus cloud and the instances in
+each, calling the same REST endpoints as the Ansible listing playbook
+(`/api/zones`, `/api/instances?zoneId=`) and exporting the result as the `clouds`
+and `summary` stack outputs. It only reads from the API — no infrastructure is
+created. See [`pulumi/README.md`](pulumi/README.md) for dependencies, config and
+usage.
 
 ## `API/` — raw REST API scripts
 
@@ -63,4 +73,6 @@ the relative `../lib/functions.sh` include resolves.
   providers, plus `curl` and `jq`.
 - `ansible/`: `ansible-core` (2.11+) and Python 3 on the control machine; only
   the bundled `ansible.builtin` modules (no extra collections).
+- `pulumi/`: the Pulumi CLI and Python 3.8+ (packages `pulumi` and `requests`,
+  installed automatically into a virtualenv).
 - `API/`: `bash` and `curl`.

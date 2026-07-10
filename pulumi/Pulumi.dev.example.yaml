@@ -1,0 +1,13 @@
+# Example stack configuration for the `dev` stack.
+#
+# Copy to Pulumi.dev.yaml (or run `pulumi stack init dev` and use the CLI), then
+# set the values. Do NOT put the password here in plaintext -- set it as an
+# encrypted secret with:
+#   pulumi config set --secret morpheus:password 's3cret'
+# which stores it (encrypted) under `config:` in the generated Pulumi.dev.yaml.
+config:
+  morpheus:url: https://morpheus.example.com
+  morpheus:username: johnl
+  # Set to "false" for a self-signed / lab appliance certificate.
+  morpheus:validateCerts: "true"
+  # morpheus:scope: write

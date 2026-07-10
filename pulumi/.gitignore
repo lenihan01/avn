@@ -1,0 +1,8 @@
+# Python virtualenv (created by Pulumi via the virtualenv option).
+venv/
+__pycache__/
+*.pyc
+
+# Pulumi stack configs can contain encrypted secrets and are normally safe to
+# commit. If you prefer to keep a stack private, ignore it explicitly, e.g.:
+# Pulumi.dev.yaml
