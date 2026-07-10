@@ -74,6 +74,20 @@ resource "hpe_morpheus_instance_type" "ubuntu_wordpress" {
 # variables.tf for how to look it up). Creating the layout needs the
 # "admin-containers" ("Library") feature permission, which is already in the
 # ceiling (locals.tf) -- no extra permission is required.
+#
+# MULTI-TENANT IMAGE-VISIBILITY CAVEAT: creating the layout is not sufficient for
+# a sub-tenant to provision from it. Morpheus filters out any layout whose node
+# type's backing VIRTUAL IMAGE is not visible to the current tenant, and the
+# wizard then reports "No layouts are available for this configuration". The
+# stock "Ubuntu 20.04" VMware node type is bound to a Morpheus OS-catalog image
+# that is a LOCKED system image (systemImage=true, visibility "private") -- it is
+# master-tenant-only and cannot be re-shared even by the master account. So a
+# sub-tenant (e.g. Coke) provisioning against this layout sees no layouts until
+# the node type is bound to a tenant-visible image (a synced vCenter template or
+# an uploaded user image set "public"/shared to the tenant). See the note on
+# variable "ubuntu_2004_node_type_id" in variables.tf for how to identify and
+# fix this. This is an appliance-side image-visibility matter, not something the
+# module can set.
 ###############################################################################
 
 resource "hpe_morpheus_instance_type_layout" "ubuntu_2004_layout" {

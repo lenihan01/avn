@@ -165,6 +165,53 @@ limitations**, each documented inline in the relevant file:
 
 ---
 
+## Multi-tenant caveat: node-type images must be visible to the sub-tenant
+
+Creating the Coke instance type and its layout is not enough for **coke-admin**
+to actually provision from it. When a sub-tenant opens the *Add Instance* wizard,
+Morpheus hides any layout whose node type's backing **virtual image** the tenant
+cannot see, and shows:
+
+> No layouts are available for this configuration
+
+The stock VMware **"Ubuntu 20.04"** node type (what `var.ubuntu_2004_node_type_id`
+typically points at) is bound to a Morpheus OS-catalog image
+(`Morpheus Ubuntu 20.04 <date>`) that is a **locked system image**
+(`systemImage: true`, `visibility: "private"`). It is visible only to the master
+tenant, and its visibility **cannot be changed even by the master account** — the
+API returns *"Only the master account can edit this particular virtual image."*
+So sub-tenants can never use it.
+
+To let a sub-tenant provision, bind the node type to an image the tenant can
+access:
+
+- **Sync from vCenter** — keep an Ubuntu 20.04 VM **template** in the vCenter the
+  tenant's cloud points at; Morpheus imports it as an editable (non-system)
+  virtual image. Set it `public` (or share it to the tenant), or
+- **Upload** an Ubuntu OVA/VMDK as a user image (`userUploaded: true`,
+  master-owned → editable) and set it `public`.
+
+Then point `var.ubuntu_2004_node_type_id` at a node type bound to that image.
+Diagnose/confirm with (as the appropriate admin):
+
+```bash
+# Layout the wizard would use, and its node type + image:
+curl -sk -H "Authorization: BEARER $TOKEN" "$URL/api/library/layouts/<LAYOUT_ID>" \
+  | jq '.instanceTypeLayout | {provisionType: .provisionType.code,
+      nodeTypes: [.containerTypes[]? | {id, provisionType: .provisionType.code, virtualImage}]}'
+
+# Image usability — want visibility "public" (or the tenant in .accounts) and systemImage:false
+curl -sk -H "Authorization: BEARER $TOKEN" "$URL/api/virtual-images/<IMAGE_ID>" \
+  | jq '.virtualImage | {id, name, visibility, systemImage, userUploaded, accounts}'
+```
+
+Sanity check: the same instance type provisioned **from the master tenant** will
+offer the layout (master can see the image), which confirms image visibility is
+the only blocker. This is an appliance-side matter — the module cannot set image
+visibility.
+
+---
+
 ## Secrets & version control
 
 `terraform.tfvars` holds credentials, so it — along with state files and the

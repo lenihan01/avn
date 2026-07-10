@@ -198,6 +198,24 @@ variable "coke_ansible_branch" {
 #     | jq -r '.containerTypes[] | select(.name=="Ubuntu 20.04") | "\(.id)\t\(.provisionType.code)"'
 #
 # then use the id of the row whose provision type code is "vmware".
+#
+# MULTI-TENANT IMAGE-VISIBILITY CAVEAT: the chosen node type must reference a
+# virtual image that the Coke SUB-TENANT can see, or the layout will not be
+# offered to coke-admin ("No layouts are available for this configuration" in the
+# provisioning wizard), even though the layout is created correctly. The stock
+# "Ubuntu 20.04" VMware node type points at a Morpheus OS-catalog image
+# ("Morpheus Ubuntu 20.04 <date>") that is a LOCKED system image
+# (systemImage=true) with visibility "private" -- it is visible only to the
+# master tenant and its visibility cannot be changed even by the master account
+# (the API returns "Only the master account can edit this particular virtual
+# image"). Sub-tenants therefore cannot use it. To make provisioning work for a
+# sub-tenant, bind the node type to an image the tenant can access: sync an
+# Ubuntu 20.04 template from the tenant's vCenter (imported as an editable,
+# non-system image) or upload an Ubuntu OVA/VMDK as a user image, set that image
+# "public" (or share it to the tenant), then point this variable at a node type
+# bound to that image. Confirm an image is usable with:
+#   GET /api/virtual-images/<id> -> expect visibility "public" (or the tenant in
+#   .accounts) and systemImage=false.
 variable "ubuntu_2004_node_type_id" {
   type        = number
   description = "Id of the VMware 'Ubuntu 20.04' node type to bind to the Ubuntu 20.04 layout (instance_types.tf). Resolve by id -- the name matches one node type per technology. See the comment above for how to find it."
