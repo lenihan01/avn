@@ -42,13 +42,15 @@ if [ "${MORPH_INSECURE:-false}" = "true" ]; then
   CURL_OPTS+=(--insecure)
 fi
 
-# 1) Authenticate as the master admin and obtain an OAuth token.
-TOKEN=$(curl "${CURL_OPTS[@]}" \
+# 1) Authenticate as the master admin and obtain an OAuth token. The password is
+#    fed to curl on stdin (--data-urlencode password@-) so it never appears in
+#    the process command line / argv, where any local user could read it via ps.
+TOKEN=$(printf '%s' "${MORPH_PASS}" | curl "${CURL_OPTS[@]}" \
   --data-urlencode "client_id=morph-api" \
   --data-urlencode "grant_type=password" \
   --data-urlencode "scope=write" \
   --data-urlencode "username=${MORPH_USER}" \
-  --data-urlencode "password=${MORPH_PASS}" \
+  --data-urlencode "password@-" \
   "${MORPH_URL}/oauth/token" | jq -r '.access_token // empty')
 
 if [ -z "${TOKEN}" ]; then
@@ -56,7 +58,12 @@ if [ -z "${TOKEN}" ]; then
   exit 1
 fi
 
-AUTH=(-H "Authorization: BEARER ${TOKEN}")
+# Keep the bearer token out of argv by passing it to curl from a 0600 temp file
+# (curl -H @file) instead of on the command line.
+AUTH_FILE=$(mktemp)
+trap 'rm -f "${AUTH_FILE}"' EXIT
+printf 'Authorization: BEARER %s\n' "${TOKEN}" >"${AUTH_FILE}"
+AUTH=(-H "@${AUTH_FILE}")
 
 # 2) Idempotency: skip the PUT if the top-level level is already as desired.
 CURRENT=$(curl "${CURL_OPTS[@]}" "${AUTH[@]}" \
@@ -72,7 +79,7 @@ fi
 BODY=$(jq -n --arg lvl "${INVENTORY_LEVEL}" '{zone: {inventoryLevel: $lvl}}')
 
 RESP_FILE=$(mktemp)
-trap 'rm -f "${RESP_FILE}"' EXIT
+trap 'rm -f "${RESP_FILE}" "${AUTH_FILE}"' EXIT
 
 CODE=$(curl "${CURL_OPTS[@]}" -o "${RESP_FILE}" -w '%{http_code}' \
   -X PUT "${MORPH_URL}/api/zones/${CLOUD_ID}" \

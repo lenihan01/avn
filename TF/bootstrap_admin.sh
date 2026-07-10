@@ -44,13 +44,15 @@ if [ "${MORPH_INSECURE:-false}" = "true" ]; then
   CURL_OPTS+=(--insecure)
 fi
 
-# 1) Authenticate as the master admin and obtain an OAuth token.
-TOKEN=$(curl "${CURL_OPTS[@]}" \
+# 1) Authenticate as the master admin and obtain an OAuth token. The password is
+#    fed to curl on stdin (--data-urlencode password@-) so it never appears in
+#    the process command line / argv, where any local user could read it via ps.
+TOKEN=$(printf '%s' "${MORPH_PASS}" | curl "${CURL_OPTS[@]}" \
   --data-urlencode "client_id=morph-api" \
   --data-urlencode "grant_type=password" \
   --data-urlencode "scope=write" \
   --data-urlencode "username=${MORPH_USER}" \
-  --data-urlencode "password=${MORPH_PASS}" \
+  --data-urlencode "password@-" \
   "${MORPH_URL}/oauth/token" | jq -r '.access_token // empty')
 
 if [ -z "${TOKEN}" ]; then
@@ -58,7 +60,12 @@ if [ -z "${TOKEN}" ]; then
   exit 1
 fi
 
-AUTH=(-H "Authorization: Bearer ${TOKEN}")
+# Keep the bearer token out of argv by passing it to curl from a 0600 temp file
+# (curl -H @file) instead of on the command line.
+AUTH_FILE=$(mktemp)
+trap 'rm -f "${AUTH_FILE}"' EXIT
+printf 'Authorization: Bearer %s\n' "${TOKEN}" >"${AUTH_FILE}"
+AUTH=(-H "@${AUTH_FILE}")
 
 # 2) Idempotency: if the admin already exists in this tenant, do nothing.
 #    (Handles re-runs and admins left behind by earlier failed applies.)
@@ -95,12 +102,14 @@ BODY=$(jq -n \
    )}')
 
 RESP_FILE=$(mktemp)
-trap 'rm -f "${RESP_FILE}"' EXIT
+trap 'rm -f "${RESP_FILE}" "${AUTH_FILE}"' EXIT
 
-CODE=$(curl "${CURL_OPTS[@]}" -o "${RESP_FILE}" -w '%{http_code}' \
+# The request body carries the admin (and optional guest OS) passwords, so pipe
+# it to curl on stdin (--data @-) rather than passing it as a command-line arg.
+CODE=$(printf '%s' "${BODY}" | curl "${CURL_OPTS[@]}" -o "${RESP_FILE}" -w '%{http_code}' \
   -X POST "${MORPH_URL}/api/users?accountId=${TENANT_ID}" \
   "${AUTH[@]}" -H "Content-Type: application/json" \
-  --data "${BODY}")
+  --data @-)
 
 USER_ID=$(jq -r '.user.id // empty' <"${RESP_FILE}" 2>/dev/null || true)
 

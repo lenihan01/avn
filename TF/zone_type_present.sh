@@ -45,13 +45,15 @@ if [ "${INSECURE}" = "true" ]; then
   CURL_OPTS+=(--insecure)
 fi
 
-# 1) Authenticate as the master admin and obtain an OAuth token.
-TOKEN=$(curl "${CURL_OPTS[@]}" \
+# 1) Authenticate as the master admin and obtain an OAuth token. The password is
+#    fed to curl on stdin (--data-urlencode password@-) so it never appears in
+#    the process command line / argv, where any local user could read it via ps.
+TOKEN=$(printf '%s' "${PASSWORD}" | curl "${CURL_OPTS[@]}" \
   --data-urlencode "client_id=morph-api" \
   --data-urlencode "grant_type=password" \
   --data-urlencode "scope=write" \
   --data-urlencode "username=${USERNAME}" \
-  --data-urlencode "password=${PASSWORD}" \
+  --data-urlencode "password@-" \
   "${URL}/oauth/token" | jq -r '.access_token // empty')
 
 if [ -z "${TOKEN}" ]; then
@@ -59,10 +61,16 @@ if [ -z "${TOKEN}" ]; then
   exit 1
 fi
 
+# Keep the bearer token out of argv by passing it to curl from a 0600 temp file
+# (curl -H @file) instead of on the command line.
+AUTH_FILE=$(mktemp)
+trap 'rm -f "${AUTH_FILE}"' EXIT
+printf 'Authorization: BEARER %s\n' "${TOKEN}" >"${AUTH_FILE}"
+
 # 2) List zone types and check whether the requested code is present. max=-1
 #    returns all rows so paging can't hide the match.
 PRESENT=$(curl -G "${CURL_OPTS[@]}" \
-  -H "Authorization: Bearer ${TOKEN}" \
+  -H "@${AUTH_FILE}" \
   --data-urlencode "max=-1" \
   "${URL}/api/zone-types" \
   | jq -r --arg c "${CODE}" 'any(.zoneTypes[]?; .code == $c) | tostring')
