@@ -6,19 +6,33 @@ module in [`../TF`](../TF).
 The token-retrieval logic lives in `tasks/get_morpheus_token.yml` and is shared
 (via `import_tasks`) by the playbooks below.
 
-## `get_morpheus_token.yml`
+## Dependencies
 
-Obtains a Morpheus API OAuth token from a username and password, using the same
-password-grant flow as the Terraform helper scripts (`POST /oauth/token` with the
-built-in `morph-api` client). The token is registered as the `morpheus_token`
-fact so later plays/tasks can reuse it as `Authorization: BEARER {{ morpheus_token }}`.
+- **Ansible** — `ansible-core` (2.11+) on the control machine. Run with
+  `ansible-playbook`.
+- **Python 3** — required by `ansible-core` on the control machine.
+- **Collections** — none beyond the bundled `ansible.builtin` (only the
+  `uri`, `assert`, `set_fact`, `fail` and `debug` modules are used, so no
+  `ansible-galaxy` installs are needed).
+- **Network access** — HTTPS reachability from the control machine to the
+  Morpheus appliance, plus a valid Morpheus login (see Variables).
 
-### Requirements
+These playbooks run against `localhost` (`connection: local`) and talk to the
+appliance over HTTP, so no managed hosts or inventory file are required.
 
-- Ansible (`ansible-core`) on the control machine.
-- Network access to the appliance.
+## Layout
 
-### Variables
+| Path | Purpose |
+| --- | --- |
+| `tasks/get_morpheus_token.yml` | Reusable tasks that obtain an API token and register it as the `morpheus_token` fact. Imported by both playbooks. |
+| `get_morpheus_token.yml` | Playbook: obtain a token from a username + password. |
+| `list_clouds_and_instances.yml` | Playbook: obtain a token, then list every cloud and the instances in each. |
+| `morpheus.vars.example.yml` | Example variables file — copy, fill in, and pass with `-e @file`. |
+| `.gitignore` | Keeps real credential vars files (`*.vars.yml`) out of version control. |
+
+## Variables
+
+All playbooks share the same variables (pass via `--extra-vars` or a vars file):
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
@@ -27,6 +41,13 @@ fact so later plays/tasks can reuse it as `Authorization: BEARER {{ morpheus_tok
 | `morpheus_password` | yes | – | Login password |
 | `morpheus_validate_certs` | no | `true` | Verify the appliance TLS cert; set `false` for self-signed/lab appliances |
 | `morpheus_scope` | no | `write` | OAuth scope |
+
+## `get_morpheus_token.yml`
+
+Obtains a Morpheus API OAuth token from a username and password, using the same
+password-grant flow as the Terraform helper scripts (`POST /oauth/token` with the
+built-in `morph-api` client). The token is registered as the `morpheus_token`
+fact so later plays/tasks can reuse it as `Authorization: BEARER {{ morpheus_token }}`.
 
 ### Usage
 

@@ -7,6 +7,7 @@ two independent, self-contained areas:
 | Directory | What it is |
 |---|---|
 | [`TF/`](TF/) | A **Terraform module** that stands up a complete two-tenant (Coke / Pepsi) Morpheus example — tenants, roles, users, VMware clouds, policies, tasks, workflows and instance types — using the `HPE/hpe` provider. This is the primary, declarative way to reproduce the environment. |
+| [`ansible/`](ansible/) | **Ansible playbooks** that call the Morpheus REST API — obtain an API token from a username/password, and list clouds and the instances in each. See [`ansible/README.md`](ansible/README.md). |
 | [`API/`](API/) | A library of **standalone `bash` + `curl` scripts** that exercise the Morpheus REST API directly. Useful for exploration, one-off operations, and understanding the API calls that back the Terraform workarounds. |
 
 ## `TF/` — Terraform module
@@ -18,6 +19,18 @@ bugs/limitations (documented inline in the module).
 See [`TF/README.md`](TF/README.md) for the full file-by-file description,
 requirements (Terraform >= 1.11.0, `HPE/hpe` provider 1.5.0, `curl` + `jq`), and
 how to populate `terraform.tfvars` from the supplied example.
+
+## `ansible/` — Morpheus API playbooks
+
+Ansible playbooks that talk to the Morpheus REST API from `localhost`:
+
+- `get_morpheus_token.yml` — obtain an API OAuth token from a username/password.
+- `list_clouds_and_instances.yml` — obtain a token, then list every cloud and
+  the instances in each.
+
+The shared token-retrieval tasks live in `ansible/tasks/get_morpheus_token.yml`.
+Only the bundled `ansible.builtin` modules are used (no extra collections). See
+[`ansible/README.md`](ansible/README.md) for dependencies, variables and usage.
 
 ## `API/` — raw REST API scripts
 
@@ -48,4 +61,6 @@ the relative `../lib/functions.sh` include resolves.
 - A reachable HPE Morpheus appliance and a master-tenant admin account.
 - `TF/`: Terraform >= 1.11.0, the `HPE/hpe` (1.5.0) and `hashicorp/external`
   providers, plus `curl` and `jq`.
+- `ansible/`: `ansible-core` (2.11+) and Python 3 on the control machine; only
+  the bundled `ansible.builtin` modules (no extra collections).
 - `API/`: `bash` and `curl`.
