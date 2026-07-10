@@ -3,7 +3,7 @@
 #
 # First obtains an API token (tasks/get_morpheus_token.yml, same password grant
 # as get_morpheus_token.yml), then:
-#   1. GET /api/clouds            -> all clouds visible to the authenticated user
+#   1. GET /api/zones             -> all clouds visible to the authenticated user
 #   2. GET /api/instances?zoneId= -> the instances in each of those clouds
 #
 # Required/optional variables are the same as get_morpheus_token.yml
@@ -39,7 +39,7 @@
 
     - name: Retrieve the list of clouds
       ansible.builtin.uri:
-        url: "{{ morpheus_base_url }}/api/clouds?max=1000"
+        url: "{{ morpheus_base_url }}/api/zones?max=1000"
         method: GET
         headers:
           Authorization: "BEARER {{ morpheus_token }}"
@@ -47,13 +47,25 @@
         status_code: 200
         return_content: true
       register: clouds_response
+      # no_log protects the bearer token in the request headers; failed_when
+      # false lets the next task report a secret-free diagnostic on failure.
       no_log: true
+      failed_when: false
+
+    - name: Report a clouds request failure (no secrets)
+      ansible.builtin.fail:
+        msg: >-
+          GET {{ clouds_response.url | default(morpheus_base_url ~ '/api/zones') }}
+          failed (status {{ clouds_response.status | default('n/a') }}):
+          {{ clouds_response.msg | default('') }}
+          {{ clouds_response.json | default(clouds_response.content | default('')) }}
+      when: clouds_response.status | default(0) != 200
 
     - name: Normalize the clouds list
-      # /api/clouds returns the clouds under ".clouds" on current appliances and
-      # under ".zones" on older ones; support both.
+      # /api/zones returns the clouds under ".zones"; the /api/clouds alias (not
+      # present on all appliances) uses ".clouds". Support both keys.
       ansible.builtin.set_fact:
-        morpheus_clouds: "{{ clouds_response.json.clouds | default(clouds_response.json.zones, true) | default([], true) }}"
+        morpheus_clouds: "{{ clouds_response.json.zones | default(clouds_response.json.clouds, true) | default([], true) }}"
 
     - name: Retrieve instances for each cloud
       ansible.builtin.uri:
@@ -69,6 +81,19 @@
         label: "{{ item.name }}"
       register: instances_responses
       no_log: true
+      failed_when: false
+
+    - name: Report an instances request failure (no secrets)
+      ansible.builtin.fail:
+        msg: >-
+          GET instances for cloud '{{ item.item.name }}' (id {{ item.item.id }})
+          failed (status {{ item.status | default('n/a') }}):
+          {{ item.msg | default('') }}
+          {{ item.json | default(item.content | default('')) }}
+      loop: "{{ instances_responses.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+      when: item.status | default(0) != 200
 
     - name: Build the cloud -> instances mapping
       ansible.builtin.set_fact:

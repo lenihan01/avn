@@ -76,7 +76,7 @@ The token itself is never printed (the request, token, and `set_fact` tasks use
 Obtains a token (same variables as above), then lists every cloud and the
 instances in each:
 
-1. `GET /api/clouds` — all clouds visible to the authenticated user.
+1. `GET /api/zones` — all clouds visible to the authenticated user.
 2. `GET /api/instances?zoneId=<cloud id>` — the instances in each cloud.
 
 Results are registered as the `morpheus_cloud_instances` fact — a list of
