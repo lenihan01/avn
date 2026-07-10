@@ -13,7 +13,7 @@ two independent, self-contained areas:
 
 The recommended entry point. It builds the whole environment in a single
 `terraform apply` and encapsulates several workarounds for known provider
-bugs/limitations (documented inline and as repo issues #1–#7).
+bugs/limitations (documented inline in the module).
 
 See [`TF/README.md`](TF/README.md) for the full file-by-file description,
 requirements (Terraform >= 1.11.0, `HPE/hpe` provider 1.5.0, `curl` + `jq`), and

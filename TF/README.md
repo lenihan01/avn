@@ -144,8 +144,7 @@ deferred to apply time and depend on the bootstrap admins).
 ## Known provider issues (v1.5.0)
 
 This module contains **4 workarounds for provider bugs** and **3 for provider
-limitations**, each documented inline in the relevant file (and tracked as repo
-issues #1–#7):
+limitations**, each documented inline in the relevant file:
 
 **Bugs**
 1. `data_center_name` null → `""` (inconsistent result on update) — set
