@@ -1,0 +1,93 @@
+---
+# List every Morpheus cloud and the instances provisioned in each one.
+#
+# First obtains an API token (tasks/get_morpheus_token.yml, same password grant
+# as get_morpheus_token.yml), then:
+#   1. GET /api/clouds            -> all clouds visible to the authenticated user
+#   2. GET /api/instances?zoneId= -> the instances in each of those clouds
+#
+# Required/optional variables are the same as get_morpheus_token.yml
+# (morpheus_url, morpheus_username, morpheus_password, morpheus_validate_certs,
+# morpheus_scope). See README.md.
+#
+# Example:
+#   ansible-playbook list_clouds_and_instances.yml \
+#     -e morpheus_url=https://morpheus.example.com \
+#     -e morpheus_username=johnl \
+#     -e morpheus_password='s3cret' \
+#     -e morpheus_validate_certs=false
+#
+# Results are registered as the fact `morpheus_cloud_instances`: a list of
+#   { cloud_id, cloud_name, instances: [ <instance objects> ] }
+# for reuse by later plays/tasks, and printed as a readable summary.
+- name: List Morpheus clouds and their instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    morpheus_validate_certs: true
+    morpheus_scope: write
+
+  tasks:
+    - name: Obtain the Morpheus API token
+      ansible.builtin.import_tasks: tasks/get_morpheus_token.yml
+
+    - name: Set the appliance base URL (trailing slash trimmed)
+      ansible.builtin.set_fact:
+        morpheus_base_url: "{{ morpheus_url | regex_replace('/$', '') }}"
+
+    - name: Retrieve the list of clouds
+      ansible.builtin.uri:
+        url: "{{ morpheus_base_url }}/api/clouds?max=1000"
+        method: GET
+        headers:
+          Authorization: "BEARER {{ morpheus_token }}"
+        validate_certs: "{{ morpheus_validate_certs | bool }}"
+        status_code: 200
+        return_content: true
+      register: clouds_response
+      no_log: true
+
+    - name: Normalize the clouds list
+      # /api/clouds returns the clouds under ".clouds" on current appliances and
+      # under ".zones" on older ones; support both.
+      ansible.builtin.set_fact:
+        morpheus_clouds: "{{ clouds_response.json.clouds | default(clouds_response.json.zones, true) | default([], true) }}"
+
+    - name: Retrieve instances for each cloud
+      ansible.builtin.uri:
+        url: "{{ morpheus_base_url }}/api/instances?max=1000&zoneId={{ item.id }}"
+        method: GET
+        headers:
+          Authorization: "BEARER {{ morpheus_token }}"
+        validate_certs: "{{ morpheus_validate_certs | bool }}"
+        status_code: 200
+        return_content: true
+      loop: "{{ morpheus_clouds }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: instances_responses
+      no_log: true
+
+    - name: Build the cloud -> instances mapping
+      ansible.builtin.set_fact:
+        morpheus_cloud_instances: >-
+          {{ morpheus_cloud_instances | default([]) + [ {
+               'cloud_id':   item.item.id,
+               'cloud_name': item.item.name,
+               'instances':  item.json.instances | default([])
+             } ] }}
+      loop: "{{ instances_responses.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Show clouds and their instances
+      ansible.builtin.debug:
+        msg: >-
+          Cloud '{{ item.cloud_name }}' (id {{ item.cloud_id }}) —
+          {{ item.instances | length }} instance(s):
+          {{ item.instances | map(attribute='name') | list }}
+      loop: "{{ morpheus_cloud_instances }}"
+      loop_control:
+        label: "{{ item.cloud_name }}"

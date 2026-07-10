@@ -1,0 +1,7 @@
+# Private vars files with real credentials (keep the *.example.yml only).
+morpheus.vars.yml
+*.vars.yml
+!*.vars.example.yml
+
+# Ansible retry files.
+*.retry

@@ -1,0 +1,50 @@
+---
+# Reusable tasks: obtain a Morpheus API OAuth token from a username + password
+# and register it as the `morpheus_token` fact.
+#
+# Consumed via `import_tasks` by get_morpheus_token.yml and
+# list_clouds_and_instances.yml. See ../README.md for the required/optional
+# variables (morpheus_url, morpheus_username, morpheus_password,
+# morpheus_validate_certs, morpheus_scope).
+
+- name: Validate required variables are set
+  ansible.builtin.assert:
+    that:
+      - morpheus_url is defined and morpheus_url | length > 0
+      - morpheus_username is defined and morpheus_username | length > 0
+      - morpheus_password is defined and morpheus_password | length > 0
+    fail_msg: >-
+      morpheus_url, morpheus_username and morpheus_password must all be set
+      (pass them via --extra-vars or a vars file).
+    quiet: true
+
+- name: Request an OAuth token (password grant)
+  ansible.builtin.uri:
+    url: "{{ morpheus_url | regex_replace('/$', '') }}/oauth/token"
+    method: POST
+    body_format: form-urlencoded
+    body:
+      client_id: morph-api
+      grant_type: password
+      scope: "{{ morpheus_scope | default('write') }}"
+      username: "{{ morpheus_username }}"
+      password: "{{ morpheus_password }}"
+    validate_certs: "{{ morpheus_validate_certs | default(true) | bool }}"
+    status_code: 200
+    return_content: true
+  register: morpheus_token_response
+  no_log: true
+
+- name: Set the morpheus_token fact
+  ansible.builtin.set_fact:
+    morpheus_token: "{{ morpheus_token_response.json.access_token }}"
+  no_log: true
+
+- name: Fail if no token was returned
+  ansible.builtin.fail:
+    msg: "Authentication succeeded but no access_token was returned by Morpheus."
+  when: morpheus_token is not defined or morpheus_token | length == 0
+
+- name: Confirm a token was obtained
+  ansible.builtin.debug:
+    msg: "Obtained a Morpheus API token ({{ morpheus_token | length }} chars) for '{{ morpheus_username }}'."

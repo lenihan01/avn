@@ -1,0 +1,39 @@
+---
+# Obtain a Morpheus API OAuth token from a username + password.
+#
+# Mirrors the token flow used by the Terraform helper scripts (TF/*.sh):
+# a password-grant POST to /oauth/token with the built-in "morph-api" client.
+#
+# Required variables (pass via --extra-vars, a vars file, or the environment):
+#   morpheus_url       Base URL of the appliance, e.g. https://morpheus.example.com
+#   morpheus_username  Login username (e.g. "johnl", or "subtenant\\user")
+#   morpheus_password  Login password
+#
+# Optional variables:
+#   morpheus_validate_certs  Verify the appliance TLS certificate (default: true).
+#                            Set to false for self-signed/lab appliances.
+#   morpheus_scope           OAuth scope (default: "write").
+#
+# Example:
+#   ansible-playbook get_morpheus_token.yml \
+#     -e morpheus_url=https://morpheus.example.com \
+#     -e morpheus_username=johnl \
+#     -e morpheus_password='s3cret' \
+#     -e morpheus_validate_certs=false
+#
+# The retrieved token is registered as the fact `morpheus_token` for reuse by
+# later plays/tasks (e.g. Authorization: BEARER {{ morpheus_token }}). The token
+# itself is never printed; only its presence/length is shown.
+- name: Obtain a Morpheus API token
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    morpheus_validate_certs: true
+    morpheus_scope: write
+
+  tasks:
+    - name: Obtain the Morpheus API token
+      ansible.builtin.import_tasks: tasks/get_morpheus_token.yml
+

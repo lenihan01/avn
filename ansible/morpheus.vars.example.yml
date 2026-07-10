@@ -1,0 +1,15 @@
+---
+# Example variables for get_morpheus_token.yml.
+#
+# Copy to a private file (e.g. morpheus.vars.yml) and fill in real values, then:
+#   ansible-playbook get_morpheus_token.yml -e @morpheus.vars.yml
+#
+# Keep any file that contains a real password OUT of version control, or encrypt
+# it with ansible-vault. Do not commit credentials.
+
+morpheus_url: https://morpheus.example.com
+morpheus_username: johnl
+morpheus_password: change-me
+
+# Set to false for self-signed / lab appliances.
+morpheus_validate_certs: true
