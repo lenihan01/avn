@@ -212,6 +212,41 @@ visibility.
 
 ---
 
+## Caveat: `terraform destroy` may fail on the AD identity source
+
+If the optional Active Directory identity source is enabled
+(`create_coke_identity_source = true`, `identity_sources.tf`), a
+`terraform destroy` (or any destroy that removes the Coke tenant) can fail with:
+
+> Error: 400 (Bad Request): {"success":false,"msg":"Identity source could not be
+> deleted because users exist."}
+
+Once the AD identity source has been used, Morpheus auto-creates user records for
+the AD accounts that log in (or are synced). These are **not**
+`hpe_morpheus_user` resources, so Terraform does not manage or remove them, and
+Morpheus refuses to delete an identity source while any of its users remain. The
+`HPE/hpe` provider (v1.5.0) offers **no delete-time / force-delete option** on
+`hpe_morpheus_identity_source_active_directory` — its schema exposes only config
+attributes — so there is nothing to override this from Terraform.
+
+To get past it, remove the identity source from Terraform's delete path and let
+the tenant deletion clean it up on the appliance (deleting a Morpheus account
+cascades to its identity sources **and** users):
+
+```bash
+# Stop TF deleting the identity source directly; the tenant delete removes it.
+terraform state rm 'hpe_morpheus_identity_source_active_directory.coke[0]'
+terraform destroy -var-file=... # deletes the Coke tenant, which removes the source + AD users
+terraform apply   -var-file=... # recreates the identity source fresh
+```
+
+Alternatively, delete the AD users first (Coke tenant → **Administration →
+Users**), then the source (**Administration → Identity Sources**), or via API
+`DELETE $URL/api/accounts/<TENANT_ID>/user-sources/<SOURCE_ID>`, then re-run the
+destroy.
+
+---
+
 ## Secrets & version control
 
 `terraform.tfvars` holds credentials, so it — along with state files and the
