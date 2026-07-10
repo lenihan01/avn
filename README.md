@@ -6,7 +6,7 @@ two independent, self-contained areas:
 
 | Directory | What it is |
 |---|---|
-| [`TF/`](TF/) | A **Terraform module** that stands up a complete two-tenant (Coke / Pepsi) Morpheus example — tenants, roles, users, VMware clouds, policies, tasks, workflows and instance types — using the `HPE/hpe` provider. This is the primary, declarative way to reproduce the environment. |
+| [`TF/`](TF/) | A **Terraform module** that stands up a complete two-tenant (Coke / Pepsi) Morpheus example — tenants, a Coke-owned sub-tenant (Coke-Finance), roles, users, VMware clouds, policies, tasks, workflows, instance types, an optional HVM cluster and an optional Active Directory identity source — using the `HPE/hpe` provider. This is the primary, declarative way to reproduce the environment. |
 | [`ansible/`](ansible/) | **Ansible playbooks** that call the Morpheus REST API — obtain an API token from a username/password, and list clouds and the instances in each. See [`ansible/README.md`](ansible/README.md). |
 | [`pulumi/`](pulumi/) | A **Pulumi (Python) program** that calls the Morpheus REST API to list clouds and the instances in each, exporting the result as stack outputs. The Pulumi equivalent of the Ansible listing playbook. See [`pulumi/README.md`](pulumi/README.md). |
 | [`API/`](API/) | A library of **standalone `bash` + `curl` scripts** that exercise the Morpheus REST API directly. Useful for exploration, one-off operations, and understanding the API calls that back the Terraform workarounds. |

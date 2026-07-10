@@ -40,11 +40,12 @@ authenticate as each tenant's bootstrap admin.
 |---|---|
 | `versions.tf` | Terraform & provider version constraints (`hpe` 1.5.0, `external` >= 2.3.0). |
 | `providers.tf` | The master `hpe` provider plus per-tenant aliases (`hpe.coke`, `hpe.pepsi`, `hpe.coke_finance`) that log in as each tenant's bootstrap admin (`subdomain\username`). |
-| `variables.tf` | All input variables (34 of them) — appliance connection, tenant admin creds, cloud connection details, and the various id/toggle inputs. |
+| `variables.tf` | All input variables (44 of them) — appliance connection, tenant admin creds, cloud connection details, the optional Active Directory identity source, and the various id/toggle inputs. |
 | `locals.tf` | Core data structures everything fans out from: the `tenants` map, `coke_subtenants`, the role feature-permission ceiling, per-tenant cloud config, and derived creds. Add a tenant here to scale the whole module. |
 | `roles.tf` | The shared `Base Role` (also the tenant permission ceiling), the multitenant `tenant_user` and `tenant_admin` roles. |
 | `tenants.tf` | The `Coke`/`Pepsi` tenants (master provider) and the `Coke-Finance` sub-tenant (created through `hpe.coke`). |
 | `users.tf` | Bootstrap admins (created via the API — see `bootstrap_admin.sh`) and the standard per-tenant users (`coke_user*`, `pepsi_user*`), assigned tenant-local role ids resolved by `hpe_morpheus_role` data sources. |
+| `identity_sources.tf` | Optional Active Directory identity source for the Coke tenant (gated by `var.create_coke_identity_source`, created through `hpe.coke`). |
 | `clouds.tf` | Per-tenant infrastructure groups + VMware clouds, the Pepsi bare-metal cloud (gated on plugin availability), the Coke-Finance HVM cloud (toggle), and `terraform_data.vmware_inventory_level`. |
 | `clusters.tf` | The Coke-Finance HVM cluster (gated by `var.create_coke_finance_hvm`). |
 | `instance_types.tf` | Coke library instance type + layout (references a VMware node type by id). |
@@ -112,14 +113,18 @@ all are idempotent.
      ```bash
      curl -sk -H "Authorization: BEARER $TOKEN" \
        "$URL/api/library/cluster-layouts?phrase=HVM" \
-       | jq '.clusterLayouts[] | {id, name}'
+       | jq '.layouts[] | {id, name, enabled}'
+     # pick the id of an enabled layout, e.g. "HVM 1.3 Cluster on HVM/Ubuntu 24.04"
      ```
 
 4. **Optional toggles / defaults** (safe to leave as-is):
    - `create_coke_finance_hvm` (`false`) — set `true` to create the Coke-Finance
      HVM cloud + cluster. Requires `coke_hvm_layout_id`,
      `coke_finance_hvm_ssh_password`, and a valid
-     `coke_hvm_management_net_interface` (default `ens160`).
+     `coke_hvm_management_net_interface` (default `ens160`). The interface name
+     must be the one that actually carries each host's management IP (the
+     addresses in the cluster's `ssh_hosts`); if it names an interface with no
+     address the cluster build hangs at host bring-up.
    - `pepsi_baremetal_ilo_username`/`password` — inline iLO creds for the Pepsi
      bare-metal cloud; leave empty to create it without them. (The bare-metal
      cloud is only created when the `hpe-baremetal-plugin.cloud` type exists.)

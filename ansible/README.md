@@ -12,8 +12,8 @@ The token-retrieval logic lives in `tasks/get_morpheus_token.yml` and is shared
   `ansible-playbook`.
 - **Python 3** — required by `ansible-core` on the control machine.
 - **Collections** — none beyond the bundled `ansible.builtin` (only the
-  `uri`, `assert`, `set_fact`, `fail` and `debug` modules are used, so no
-  `ansible-galaxy` installs are needed).
+  `uri`, `assert`, `set_fact`, `fail`, `debug` and `import_tasks` modules are
+  used, so no `ansible-galaxy` installs are needed).
 - **Network access** — HTTPS reachability from the control machine to the
   Morpheus appliance, plus a valid Morpheus login (see Variables).
 
