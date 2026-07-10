@@ -119,6 +119,22 @@ locals {
     #     error rather than a 403.
     "admin-containers",
 
+    # Blueprint / App features.
+    #   admin-appTemplates ("Blueprints") gates the app-blueprint create/update/
+    #     delete API (POST/PUT/DELETE /api/blueprints) and the Library > Blueprints
+    #     UI -- verified in the Morpheus AppTemplatesController, whose class
+    #     requires admin-appTemplates at "read"/"full" and whose save/update/
+    #     delete actions each require it at "full" access. Needed for a tenant
+    #     admin to define app blueprints (e.g. the Coke Ubuntu app blueprint).
+    #   provisioning-apps ("Apps") gates the app instance create/update/delete
+    #     API (POST/PUT/DELETE /api/apps) and the Provisioning > Apps UI --
+    #     verified in the Morpheus AppsController, whose class requires
+    #     provisioning-apps at "read"/"full" and whose save/update/delete actions
+    #     each require it at "full". Without it a blueprint can be authored but no
+    #     app can be deployed from it, so both are granted together.
+    "admin-appTemplates",
+    "provisioning-apps",
+
     # Provisioning features.
     #   provisioning ("Provisioning: Instances") is granted to EVERY tenant --
     #     both the tenant_admin role and the base-role ceiling (roles.tf) -- so
