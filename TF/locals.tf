@@ -120,20 +120,19 @@ locals {
     "admin-containers",
 
     # Blueprint / App features.
-    #   admin-appTemplates ("Blueprints") gates the app-blueprint create/update/
+    #   app-templates ("App Blueprints") gates the app-blueprint create/update/
     #     delete API (POST/PUT/DELETE /api/blueprints) and the Library > Blueprints
-    #     UI -- verified in the Morpheus AppTemplatesController, whose class
-    #     requires admin-appTemplates at "read"/"full" and whose save/update/
-    #     delete actions each require it at "full" access. Needed for a tenant
-    #     admin to define app blueprints (e.g. the Coke Ubuntu app blueprint).
-    #   provisioning-apps ("Apps") gates the app instance create/update/delete
-    #     API (POST/PUT/DELETE /api/apps) and the Provisioning > Apps UI --
-    #     verified in the Morpheus AppsController, whose class requires
-    #     provisioning-apps at "read"/"full" and whose save/update/delete actions
-    #     each require it at "full". Without it a blueprint can be authored but no
-    #     app can be deployed from it, so both are granted together.
-    "admin-appTemplates",
-    "provisioning-apps",
+    #     UI. Needed for a tenant admin to define app blueprints (e.g. the Coke
+    #     Ubuntu app blueprint). (Sibling codes arm-template, cloudFormation-
+    #     template, helm-template, kubernetes-template and terraform-template gate
+    #     the typed IaC blueprints; only the plain Morpheus "App Blueprints"
+    #     feature is granted here.)
+    #   apps ("Apps") gates the app instance create/update/delete API
+    #     (POST/PUT/DELETE /api/apps) and the Provisioning > Apps UI. Without it a
+    #     blueprint can be authored but no app can be deployed from it, so both are
+    #     granted together.
+    "app-templates",
+    "apps",
 
     # Provisioning features.
     #   provisioning ("Provisioning: Instances") is granted to EVERY tenant --
