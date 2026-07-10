@@ -108,6 +108,71 @@ variable "pepsi_user_count" {
   default     = 5
 }
 
+# --- Coke identity source (Active Directory, identity_sources.tf) -------------
+# Adds an Active Directory identity source to the Coke tenant. Disabled by
+# default; set create_coke_identity_source = true and supply the coke_ad_*
+# values (server, domain, binding username/password are required) to create it.
+variable "create_coke_identity_source" {
+  type        = bool
+  description = "Whether to create the Coke tenant Active Directory identity source (identity_sources.tf). Defaults to false; requires the coke_ad_* variables when true."
+  default     = false
+}
+
+variable "coke_ad_name" {
+  type        = string
+  description = "Display name of the Coke Active Directory identity source (identity_sources.tf)."
+  default     = "Coke Active Directory"
+}
+
+variable "coke_ad_server" {
+  type        = string
+  description = "IP address or hostname of the AD domain controller for the Coke identity source. Required when create_coke_identity_source is true."
+  default     = ""
+}
+
+variable "coke_ad_domain" {
+  type        = string
+  description = "Active Directory domain name (e.g. corp.example.com) for the Coke identity source. Required when create_coke_identity_source is true."
+  default     = ""
+}
+
+variable "coke_ad_binding_username" {
+  type        = string
+  description = "Username of the service account Morpheus binds with to authenticate against the AD domain. Required when create_coke_identity_source is true."
+  default     = ""
+}
+
+variable "coke_ad_binding_password" {
+  type        = string
+  description = "Password for the AD binding service account. Required when create_coke_identity_source is true."
+  default     = ""
+  sensitive   = true
+}
+
+variable "coke_ad_use_ssl" {
+  type        = bool
+  description = "Whether Morpheus connects to the AD domain controller over SSL/LDAPS (identity_sources.tf)."
+  default     = false
+}
+
+variable "coke_ad_required_group" {
+  type        = string
+  description = "Optional AD group users must belong to in order to log in to the Coke tenant. Empty (default) applies no group restriction."
+  default     = ""
+}
+
+variable "coke_ad_search_member_groups" {
+  type        = bool
+  description = "Whether groups nested inside coke_ad_required_group are also included when evaluating membership (identity_sources.tf)."
+  default     = false
+}
+
+variable "coke_ad_description" {
+  type        = string
+  description = "Description of the Coke Active Directory identity source (identity_sources.tf)."
+  default     = "Active Directory identity source for the Coke tenant."
+}
+
 # --- VMware (vCenter) cloud settings -----------------------------------------
 # One infrastructure group and one VMware cloud are created per tenant
 # (clouds.tf). These mirror the per-tenant cloud variables in the parent module

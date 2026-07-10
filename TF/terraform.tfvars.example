@@ -46,6 +46,22 @@ user_password = "change-me"
 coke_user_count  = 3
 pepsi_user_count = 5
 
+# Coke tenant Active Directory identity source (identity_sources.tf). Disabled by
+# default. Set create_coke_identity_source = true and fill in the connection
+# details below (server, domain and binding credentials are required) to create
+# it. AD users with no group mapping get the Coke tenant "tenant_user" role.
+create_coke_identity_source = false
+# coke_ad_name             = "Coke Active Directory"
+# coke_ad_server           = "dc01.corp.example.com"
+# coke_ad_domain           = "corp.example.com"
+# coke_ad_binding_username = "svc-morpheus"
+# coke_ad_binding_password = "change-me"
+# coke_ad_use_ssl          = false
+# Optional: restrict logins to members of a group (and, optionally, nested groups).
+# coke_ad_required_group       = "Morpheus Users"
+# coke_ad_search_member_groups = false
+# coke_ad_description          = "Active Directory identity source for the Coke tenant."
+
 # Per-tenant VMware (vCenter) cloud connection details. Each tenant gets its own
 # infrastructure group and a VMware cloud assigned to it (clouds.tf).
 coke_cloud_url        = "https://vcenter.example.local"
