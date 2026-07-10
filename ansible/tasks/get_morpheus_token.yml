@@ -33,7 +33,27 @@
     status_code: 200
     return_content: true
   register: morpheus_token_response
+  # Keep secrets (the request body carries the password) out of the log, but do
+  # not abort here -- capture the result so the next task can report a useful,
+  # secret-free diagnostic if authentication failed.
   no_log: true
+  failed_when: false
+
+- name: Report a token request failure (no secrets)
+  # Surfaces only non-sensitive fields (status, message, URL, response body).
+  # The request body / password are never referenced here.
+  ansible.builtin.fail:
+    msg: >-
+      Token request to {{ morpheus_token_response.url | default(morpheus_url) }}
+      failed (status {{ morpheus_token_response.status | default('n/a') }}):
+      {{ morpheus_token_response.msg | default('') }}
+      {{ morpheus_token_response.json | default(morpheus_token_response.content | default('')) }}
+      -- For a self-signed / lab appliance certificate set
+      morpheus_validate_certs=false. Check morpheus_url, morpheus_username and
+      morpheus_password.
+  when: >-
+    morpheus_token_response.status | default(0) != 200
+    or morpheus_token_response.json.access_token is not defined
 
 - name: Set the morpheus_token fact
   ansible.builtin.set_fact:
