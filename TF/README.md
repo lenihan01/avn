@@ -157,10 +157,10 @@ limitations**, each documented inline in the relevant file:
    `set_provisioning_settings.sh` (`settings.tf`).
 
 **Limitations**
-5. `hpe_morpheus_cloud_type` hard-errors when a type is absent —
+1. `hpe_morpheus_cloud_type` hard-errors when a type is absent —
    `zone_type_present.sh` (`clouds.tf`).
-6. No cluster-layout data source — `coke_hvm_layout_id` (`clusters.tf`).
-7. `hpe_morpheus_node_type` errors on duplicate names —
+2. No cluster-layout data source — `coke_hvm_layout_id` (`clusters.tf`).
+3. `hpe_morpheus_node_type` errors on duplicate names —
    `ubuntu_2004_node_type_id` (`instance_types.tf`).
 
 ---
