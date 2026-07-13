@@ -2,7 +2,8 @@
 
 Automation and examples for provisioning and managing a multi-tenant
 [HPE Morpheus](https://www.hpe.com/) environment. The repository is split into
-two independent, self-contained areas:
+four independent, self-contained areas — a declarative Terraform module plus
+three REST-API toolkits (Ansible, Pulumi and raw `bash`/`curl` scripts):
 
 | Directory | What it is |
 |---|---|
