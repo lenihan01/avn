@@ -61,7 +61,9 @@ A set of small scripts grouped by theme, each calling a single Morpheus endpoint
 **Usage:** the scripts read the appliance connection from environment variables
 `URL`, `USER` and `PASSWORD`, obtain an OAuth token, and call the API with
 `curl`. Requires `bash` and `curl`; run them from within their own directory so
-the relative `../lib/functions.sh` include resolves.
+the relative `../lib/functions.sh` include resolves. See
+[`API/README.md`](API/README.md) for the full script-by-script reference,
+required environment variables and examples.
 
 > Note: these API scripts are exploratory helpers — unlike the `TF/` module they
 > do not redact credentials from the process command line, so run them only on a
